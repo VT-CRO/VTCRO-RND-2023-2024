@@ -1,3 +1,10 @@
+/////////////////////////////////////////////////////////////
+// Author: Domenic Marcelli   R&D Team VT CRO
+// filename: MotorControl.c
+// Last Modified: 10/07/2023
+// Description:  This where the function defintions are kept
+///////////////////////////////////////////////////////////// 
+
 void Motor_setPIDParams(){
 
 }
