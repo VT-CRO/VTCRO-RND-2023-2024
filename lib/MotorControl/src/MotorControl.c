@@ -5,6 +5,8 @@
 // Description:  This where the function defintions are kept
 ///////////////////////////////////////////////////////////// 
 
+#include <MotorControl.h>
+
 void Motor_setPIDParams(){
 
 }

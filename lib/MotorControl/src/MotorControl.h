@@ -8,12 +8,13 @@
 
 #ifdef MOTORCONTROL_H_
 #define MOTORCONTROL_H_
+//#include "arduino_freertos.h"
+//#include "avr/pgmspace.h"
 
-#include <MotorControl.h>
 
 //Pin Macros Here
-#DEFINE IN1 14    //output pin 14 of the teensy going to the IN1 pin of the Drive Carrier 
-#DEFINE IN2 15    //output pin 15 of the teensy going to the IN2 pin of the Drive Carrier
+#DEFINE IN1 6    //output pin 14 of the teensy going to the IN1 pin of the Drive Carrier PORT B Pin 6
+#DEFINE IN2 7    //output pin 15 of the teensy going to the IN2 pin of the Drive Carrier PORT B Pin 7  
 
 //All the variables needed to control the motors
 struct _MotorStruct{
@@ -21,6 +22,7 @@ struct _MotorStruct{
     int encoderPos;
     int targetSpeed;
     int maxSpeed; 
+    
 };
 
 typedef _MotorStruct MotorStruct;
