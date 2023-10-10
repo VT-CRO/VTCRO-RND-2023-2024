@@ -6,15 +6,15 @@
 ///////////////////////////////////////////////////////////// 
 
 
+//Notes: Here is a sensor I found that using the pins https://github.com/roggenkamps/teensy-thermoled/blob/master/tempsens.c
+
+
 #ifdef MOTORCONTROL_H_
 #define MOTORCONTROL_H_
-//#include "arduino_freertos.h"
-//#include "avr/pgmspace.h"
 
+#include <avr/io.h>
+#include <avr/pgmspace.h>
 
-//Pin Macros Here
-#DEFINE IN1 6    //output pin 14 of the teensy going to the IN1 pin of the Drive Carrier PORT B Pin 6
-#DEFINE IN2 7    //output pin 15 of the teensy going to the IN2 pin of the Drive Carrier PORT B Pin 7  
 
 //All the variables needed to control the motors
 struct _MotorStruct{
