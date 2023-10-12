@@ -4,6 +4,8 @@
         "pins_arduino.h": "c",
         "core_pins.h": "c",
         "pgmspace.h": "c",
-        "io.h": "c"
+        "io.h": "c",
+        "platforms.h": "c",
+        "motorcontrol.h": "c"
     }
 }

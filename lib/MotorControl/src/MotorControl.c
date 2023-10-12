@@ -7,11 +7,12 @@
 
 //notes PWM example https://github.com/khoih-prog/Teensy_PWM  <- might be useful but all examples are in INO form
 // might want to look at ECE 2564 notes for PWM Reference HW 11
-//check platform IO path .platformio\packages\framework-arduinoteensy-ts\teensy4 for pwm.c file
+//check platform IO path .platformio\packages\framework-arduinoteensy-ts\cores\teensy4 for pwm.c file
 #include <MotorControl.h>
+
+//check out his header c file for everything PWM related.
+#include <pwm.c>
 //Pin Macros Here
-//#define IN1 (PORTB |= (1<<6))   //output pin 14 of the teensy going to the IN1 pin of the Drive Carrier PORT B Pin 6  Maybe...
-//#define IN2 (PORTB |= (1<<7))    //output pin 15 of the teensy going to the IN2 pin of the Drive Carrier PORT B Pin 7  Maybe...
 
 #define PIN14_CONFIG (DDRB |= (1<<6) )  //this might actually configure pin 14 as an output
 #define PIN14_CONFIG (DDRB |= (1<<7) )  //this might actually configure pin 15 as an output 
@@ -21,7 +22,8 @@ void Motor_setPIDParams(){
 }
 
 void Motor_start(){
-
+    pwm_init();
+    analogWriteFrequency(14, 1000.0);   // analogWriteFrequency write to 14, with a frequency 1 kHz
 }
 
 void Motor_dispatch(){
