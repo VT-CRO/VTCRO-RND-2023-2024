@@ -23,6 +23,7 @@ void Motor_setPIDParams(){
 
 void Motor_start(){
     pwm_init();
+    //don't know whether this is write. Refer to pwm.c
     analogWriteFrequency(14, 1000.0);   // analogWriteFrequency write to 14, with a frequency 1 kHz
 }
 
