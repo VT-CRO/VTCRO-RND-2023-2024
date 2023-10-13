@@ -9,21 +9,28 @@
 //Notes: Here is a sensor I found that using the pins https://github.com/roggenkamps/teensy-thermoled/blob/master/tempsens.c
 
 
-#ifdef MOTORCONTROL_H_
+#ifndef MOTORCONTROL_H_
 #define MOTORCONTROL_H_
 
 #include <avr/io.h>
 #include <avr/pgmspace.h>
+#include <pwm.c>
+
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+
 
 
 //All the variables needed to control the motors
-struct _MotorStruct{
+typedef struct{
     int motorId ;
     int encoderPos;
     int targetSpeed;
     int maxSpeed; 
     
-};
+} _MotorStruct;
 
 typedef _MotorStruct MotorStruct;
 
@@ -40,5 +47,8 @@ void Motor_setSpeed();
 void Motor_setDirection();
 
 void Motor_pidControlLoop();
+#ifdef __cplusplus
+}
+#endif
 
 #endif

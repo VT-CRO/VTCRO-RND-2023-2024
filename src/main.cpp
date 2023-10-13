@@ -1,5 +1,8 @@
 #include "arduino_freertos.h"
 #include "avr/pgmspace.h"
+#include "MotorControl.h"
+
+
 
 static void task1(void*) {
   while (true) {
@@ -44,9 +47,14 @@ FLASHMEM __attribute__((noinline)) void setup() {
   Serial.println("setup(): starting scheduler...");
   Serial.flush();
 
+  Motor_start();
+
   vTaskStartScheduler();
+  
 }
+
 
 void loop() {
   // put your main code here, to run repeatedly:
+
 }

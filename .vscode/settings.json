@@ -6,6 +6,8 @@
         "pgmspace.h": "c",
         "io.h": "c",
         "platforms.h": "c",
-        "motorcontrol.h": "c"
+        "motorcontrol.h": "c",
+        "imxrt.h": "c",
+        "printf.h": "c"
     }
 }

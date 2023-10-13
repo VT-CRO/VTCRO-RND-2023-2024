@@ -11,7 +11,7 @@
 #include <MotorControl.h>
 
 //check out his header c file for everything PWM related.
-#include <pwm.c>
+
 //Pin Macros Here
 
 #define PIN14_CONFIG (DDRB |= (1<<6) )  //this might actually configure pin 14 as an output
@@ -22,9 +22,9 @@ void Motor_setPIDParams(){
 }
 
 void Motor_start(){
-    pwm_init();
+   // pwm_init();
     //don't know whether this is write. Refer to pwm.c
-    analogWriteFrequency(14, 1000.0);   // analogWriteFrequency write to 14, with a frequency 1 kHz
+    //analogWriteFrequency(14, 1000.0);   // analogWriteFrequency write to 14, with a frequency 1 kHz
 }
 
 void Motor_dispatch(){
