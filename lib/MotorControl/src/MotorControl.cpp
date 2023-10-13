@@ -14,10 +14,10 @@
 
 //Pin Macros Here
 
-//might want to make a coustom.
+//might want to make a custom.
 MotorControl::MotorControl(){
     outputPin1 = 14;
-    outputPin2 - 15;
+    outputPin2 = 15;
 }
 
 void MotorControl::Motor_setPIDParams(){
@@ -25,9 +25,10 @@ void MotorControl::Motor_setPIDParams(){
 }
 
 void MotorControl::Motor_start(){
-    analogWrite(outputPin1, 30);
+    analogWrite(outputPin1, 50);
 }
 
+//don't do
 void MotorControl::Motor_dispatch(){
 
 }
