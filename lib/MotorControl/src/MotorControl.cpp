@@ -14,32 +14,38 @@
 
 //Pin Macros Here
 
+//might want to make a coustom.
+MotorControl::MotorControl(){
+    outputPin1 = 14;
+    outputPin2 - 15;
+}
 
-
-void Motor_setPIDParams(){
+void MotorControl::Motor_setPIDParams(){
 
 }
 
-void Motor_start(){
+void MotorControl::Motor_start(){
+    analogWrite(outputPin1, 30);
+}
+
+void MotorControl::Motor_dispatch(){
 
 }
 
-void Motor_dispatch(){
+//initalizes the pins 
+void MotorControl::Motor_pin_init(){
+      pinMode(outputPin1, 1);
+      pinMode(outputPin2, 1);
+}
+
+void MotorControl::Motor_setSpeed(){
 
 }
 
-void Motor_pin_init(){
-      
-}
-
-void Motor_setSpeed(){
+void MotorControl::Motor_setDirection(){
 
 }
 
-void Motor_setDirection(){
-
-}
-
-void Motor_pidControlLoop(){
+void MotorControl::Motor_pidControlLoop(){
     
 }

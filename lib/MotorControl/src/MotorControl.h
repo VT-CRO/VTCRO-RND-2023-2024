@@ -14,31 +14,50 @@
 
 #include <avr/io.h>
 #include <avr/pgmspace.h>
-//#include <pwm.c>
+#include "arduino_freertos.h"
 
-//All the variables needed to control the motors
-typedef struct{
+class MotorControl{
+
+    public:
+
+    MotorControl();
+
+    //Sets the PID Params
+    void Motor_setPIDParams();
+
+    //Starts the motors
+    void Motor_start();
+
+    void Motor_dispatch();
+
+    void Motor_pin_init();
+
+    //sets the speed
+    void Motor_setSpeed();
+
+    //sets the motor direction
+    void Motor_setDirection();
+
+    //pid loop
+    void Motor_pidControlLoop();
+
+    private:
+
+    typedef struct{
     int motorId ;
     int encoderPos;
     int targetSpeed;
     int maxSpeed; 
     
-} _MotorStruct;
+    } _MotorStruct;
 
-typedef _MotorStruct MotorStruct;
+    typedef _MotorStruct MotorStruct;
 
-void Motor_setPIDParams();
+    //These are probably temporary.
+    int outputPin1;
+    int outputPin2;
+};
+//All the variables needed to control the motors
 
-void Motor_start();
-
-void Motor_dispatch();
-
-void Motor_pin_init();
-
-void Motor_setSpeed();
-
-void Motor_setDirection();
-
-void Motor_pidControlLoop();
 
 #endif
