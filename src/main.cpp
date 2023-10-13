@@ -47,7 +47,7 @@ FLASHMEM __attribute__((noinline)) void setup() {
   Serial.println("setup(): starting scheduler...");
   Serial.flush();
 
-  Motor_start();
+  //Motor_start();
 
   vTaskStartScheduler();
   

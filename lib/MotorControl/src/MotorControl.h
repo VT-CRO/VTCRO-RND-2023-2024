@@ -14,14 +14,7 @@
 
 #include <avr/io.h>
 #include <avr/pgmspace.h>
-#include <pwm.c>
-
-#ifdef __cplusplus
-extern "C"
-{
-#endif
-
-
+//#include <pwm.c>
 
 //All the variables needed to control the motors
 typedef struct{
@@ -47,8 +40,5 @@ void Motor_setSpeed();
 void Motor_setDirection();
 
 void Motor_pidControlLoop();
-#ifdef __cplusplus
-}
-#endif
 
 #endif
