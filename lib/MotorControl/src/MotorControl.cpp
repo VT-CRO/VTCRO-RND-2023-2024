@@ -26,9 +26,9 @@ void MotorControl::Motor_setPIDParams(){
 
 }
 
-//Starts up the motors but sending an analog pwm wave.
+//Starts up the motors by sending an analog pwm wave.
 void MotorControl::Motor_start(){
-    analogWrite(motorOutputPin1, 50);
+    analogWrite(motorOutputPin1, 0);
 }
 
 //don't do
@@ -44,28 +44,45 @@ void MotorControl::Motor_pin_init(){
       pinMode(motorOutputPin4, arduino::OUTPUT);
 }
 
-//Values go from 0 - 255 for analogWrite
+//Values go from 0 - 255 for analogWrite. Needed to be find some convention
+//to make value. 
 void MotorControl::Motor_setSpeed(int value){
     analogWrite(motorOutputPin1, value);
     analogWrite(motorOutputPin2, value);
 }
 
 //To change direction motors but be rotating in opposite directions.
-void MotorControl::Motor_setDirection(int direction){
+void MotorControl::Motor_setDirection(int direction, int delay){
 
     //subject to change. We will want to control, angle of turn
     switch(direction){
         //forward
         case(0):
+            analogWrite(motorOutputPin1, 0);
+            analogWrite(motorOutputPin2, 0);
+            analogWrite(motorOutputPin3, 0);
+            analogWrite(motorOutputPin4, 0);
             break;
         //backward
         case(1):
+            analogWrite(motorOutputPin1, 0);
+            analogWrite(motorOutputPin2, 0);
+            analogWrite(motorOutputPin3, 0);
+            analogWrite(motorOutputPin4, 0);
             break;
-        //left
+        //counter clock wise
         case(2):
+            analogWrite(motorOutputPin1, 0);
+            analogWrite(motorOutputPin2, 0);
+            analogWrite(motorOutputPin3, 0);
+            analogWrite(motorOutputPin4, 0);
             break;
-        //right
+        //clock wise
         case(3):
+            analogWrite(motorOutputPin1, 0);
+            analogWrite(motorOutputPin2, 0);
+            analogWrite(motorOutputPin3, 0);
+            analogWrite(motorOutputPin4, 0);
             break;
     }
 }

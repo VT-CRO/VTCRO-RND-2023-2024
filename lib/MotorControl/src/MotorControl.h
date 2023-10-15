@@ -37,7 +37,7 @@ class MotorControl{
     void Motor_setSpeed(int value);
 
     //sets the motor direction
-    void Motor_setDirection(int direction));
+    void Motor_setDirection(int direction, int delay);
 
     //pid loop
     void Motor_pidControlLoop();
@@ -54,7 +54,7 @@ class MotorControl{
 
     typedef _MotorStruct MotorStruct;
 
-    //These are probably temporary.
+    //These names are temporary.
     int motorOutputPin1;
     int motorOutputPin2;
     int motorOutputPin3;
