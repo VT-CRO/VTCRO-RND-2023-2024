@@ -7,6 +7,7 @@
 
 
 //Notes: Here is a sensor I found that using the pins https://github.com/roggenkamps/teensy-thermoled/blob/master/tempsens.c
+// we have four motors
 
 
 #ifndef MOTORCONTROL_H_
@@ -33,10 +34,10 @@ class MotorControl{
     void Motor_pin_init();
 
     //sets the speed
-    void Motor_setSpeed();
+    void Motor_setSpeed(int value);
 
     //sets the motor direction
-    void Motor_setDirection();
+    void Motor_setDirection(int direction));
 
     //pid loop
     void Motor_pidControlLoop();
@@ -54,8 +55,10 @@ class MotorControl{
     typedef _MotorStruct MotorStruct;
 
     //These are probably temporary.
-    int outputPin1;
-    int outputPin2;
+    int motorOutputPin1;
+    int motorOutputPin2;
+    int motorOutputPin3;
+    int motorOutputPin4;
 };
 //All the variables needed to control the motors
 

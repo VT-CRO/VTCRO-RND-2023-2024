@@ -50,7 +50,7 @@ FLASHMEM __attribute__((noinline)) void setup() {
   MotorControl m;
   m.Motor_pin_init();
   m.Motor_start();
-  //Motor_start();
+  
 
   vTaskStartScheduler();
   
