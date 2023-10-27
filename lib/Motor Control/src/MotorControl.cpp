@@ -1,7 +1,7 @@
 /////////////////////////////////////////////////////////////
 // Author: Domenic Marcelli   R&D Team VT CRO
 // filename: MotorControl.cpp
-// Last Modified: 10/20/2023
+// Last Modified: 10/27/2023
 // Description:  This where the function defintions are kept
 ///////////////////////////////////////////////////////////// 
 
@@ -20,6 +20,7 @@
 //related to these pins
 
 //D pins control speed and 
+//Need to see if I can do this with only 4 pins. Check Seniors code 
 MotorControl::MotorControl(){
     motorOutputPWMPin1 = 37;  //4.482 kHz //37 - 
     int motorOutIN1Pin1 = 19;      //IN1 Digital Pin
