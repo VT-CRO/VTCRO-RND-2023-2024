@@ -1,3 +1,13 @@
 {
-    "cmake.sourceDirectory": "/home/dmarcelli/cro_stuff/VTCRO-RND-2023-2024/.pio/libdeps/teensy41/freertos-teensy/src"
+    "cmake.sourceDirectory": "/home/dmarcelli/cro_stuff/VTCRO-RND-2023-2024/.pio/libdeps/teensy41/freertos-teensy/src",
+    "files.associations": {
+        "pins_arduino.h": "c",
+        "core_pins.h": "c",
+        "pgmspace.h": "c",
+        "io.h": "c",
+        "platforms.h": "c",
+        "motorcontrol.h": "c",
+        "imxrt.h": "c",
+        "printf.h": "c"
+    }
 }

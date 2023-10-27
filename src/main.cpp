@@ -1,5 +1,6 @@
 #include "arduino_freertos.h"
 #include "avr/pgmspace.h"
+// #include "MotorControl.h"
 
 static void task1(void*) {
   while (true) {
@@ -21,7 +22,8 @@ static void task2(void*) {
   }
 }
 
-FLASHMEM __attribute__((noinline)) void setup() {
+FLASHMEM __attribute__((noinline))
+void setup() {
   Serial.begin(115'200);
   pinMode(arduino::LED_BUILTIN, arduino::OUTPUT);
   digitalWriteFast(arduino::LED_BUILTIN, arduino::HIGH);
@@ -44,9 +46,17 @@ FLASHMEM __attribute__((noinline)) void setup() {
   Serial.println("setup(): starting scheduler...");
   Serial.flush();
 
+  // MotorControl m;
+  // m.Motor_pin_init();
+  // m.Motor_start();
+  
+
   vTaskStartScheduler();
+
 }
+
 
 void loop() {
   // put your main code here, to run repeatedly:
+
 }
