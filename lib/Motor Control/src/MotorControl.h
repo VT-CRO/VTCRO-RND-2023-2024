@@ -34,7 +34,7 @@ class MotorControl{
     void Motor_pin_init();
 
     //sets the speed
-    void Motor_setSpeed(int value);
+    void Motor_setSpeed(int motor1, int motor2, int motor3, int motor4);
 
     //sets the motor direction
     void Motor_setDirection(int direction, int delay);
@@ -55,12 +55,19 @@ class MotorControl{
     typedef _MotorStruct MotorStruct;
 
     //These names are temporary.
-    int motorOutputPWMPin1;
+    int motorOutputPWMPin1_1;
+    int motorOutputPWMPin1_2;
+
     int motorOutputPWMPin2_1;
+    int motorOutputPWMPin2_2;
+
     int motorOutputPWMPin3_1;
+    int motorOutputPWMPin3_2;
+
     int motorOutputPWMPin4_1;
-    int motorOutIN1Pin1;
-    int motorOutIN2Pin1;
+    int motorOutputPWMPin4_2;
+
+
 };
 //All the variables needed to control the motors
 
