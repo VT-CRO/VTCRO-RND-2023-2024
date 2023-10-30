@@ -81,10 +81,46 @@ void MotorControl::Motor_pin_init(){
 // I want to support negative values later
 // to signify reverse.
 void MotorControl::Motor_setSpeed(int motor1, int motor2, int motor3, int motor4){
-    analogWrite(motorOutputPWMPin1_1, motor1);
-    analogWrite(motorOutputPWMPin2_1, motor2);
-    analogWrite(motorOutputPWMPin3_1, motor3);
-    analogWrite(motorOutputPWMPin4_1, motor4);
+    if(motor1 < 0){
+        int neg = -motor1;
+        analogWrite(motorOutputPWMPin1_2, neg);
+        digitalWrite(motorOutputPWMPin1_1, arduino::LOW);
+    }
+    else{
+        analogWrite(motorOutputPWMPin1_1, motor1);
+        digitalWrite(motorOutputPWMPin1_2, arduino::LOW);
+    }
+    
+    if(motor2 < 0){
+        int neg = -motor2;
+        analogWrite(motorOutputPWMPin2_2, neg);
+        digitalWrite(motorOutputPWMPin2_1, arduino::LOW);
+    }
+    else{
+        analogWrite(motorOutputPWMPin2_1, motor1);
+        digitalWrite(motorOutputPWMPin2_2, arduino::LOW);
+    }
+
+    if(motor3 < 0){
+        int neg = -motor2;
+        analogWrite(motorOutputPWMPin3_2, neg);
+        digitalWrite(motorOutputPWMPin3_1, arduino::LOW);
+    }
+    else{
+        analogWrite(motorOutputPWMPin3_1, motor1);
+        digitalWrite(motorOutputPWMPin3_2, arduino::LOW);
+    }
+
+    if(motor4 < 0){
+        int neg = -motor2;
+        analogWrite(motorOutputPWMPin4_2, neg);
+        digitalWrite(motorOutputPWMPin4_1, arduino::LOW);
+    }
+    else{
+        analogWrite(motorOutputPWMPin4_1, motor1);
+        digitalWrite(motorOutputPWMPin4_2, arduino::LOW);
+    }
+
 }
 
 //To change direction motors but be rotating in opposite directions.
