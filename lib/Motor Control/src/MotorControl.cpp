@@ -64,7 +64,7 @@ void MotorControl::Motor_dispatch(){
 // honestly, we might want the constuctor to handle this
 void MotorControl::Motor_pin_init(){
       pinMode(motorOutputPWMPin1_1, arduino::OUTPUT);
-      pinMode(motorOutputPWMPin1_1, arduino::OUTPUT);
+      pinMode(motorOutputPWMPin1_2, arduino::OUTPUT);
 
       pinMode(motorOutputPWMPin2_1, arduino::OUTPUT);
       pinMode(motorOutputPWMPin2_2, arduino::OUTPUT);
@@ -91,7 +91,7 @@ void MotorControl::Motor_setSpeed(int motor1, int motor2, int motor3, int motor4
         digitalWrite(motorOutputPWMPin1_2, arduino::LOW);
     }
     
-    if(motor2 < 0){
+  if(motor2 < 0){
         int neg = -motor2;
         analogWrite(motorOutputPWMPin2_2, neg);
         digitalWrite(motorOutputPWMPin2_1, arduino::LOW);
