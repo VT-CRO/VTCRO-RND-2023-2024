@@ -83,12 +83,12 @@ void MotorControl::Motor_pin_init(){
 void MotorControl::Motor_setSpeed(int motor1, int motor2, int motor3, int motor4){
     if(motor1 < 0){
         int neg = -motor1;
-        analogWrite(motorOutputPWMPin1_2, neg);
-        digitalWrite(motorOutputPWMPin1_1, arduino::LOW);
+        analogWrite(motorOutputPWMPin1_1, neg);
+        digitalWrite(motorOutputPWMPin1_2, arduino::LOW);
     }
     else{
-        analogWrite(motorOutputPWMPin1_1, motor1);
-        digitalWrite(motorOutputPWMPin1_2, arduino::LOW);
+        analogWrite(motorOutputPWMPin1_2, motor1);
+        digitalWrite(motorOutputPWMPin1_1, arduino::LOW);
     }
     
   if(motor2 < 0){
@@ -103,12 +103,12 @@ void MotorControl::Motor_setSpeed(int motor1, int motor2, int motor3, int motor4
 
     if(motor3 < 0){
         int neg = -motor2;
-        analogWrite(motorOutputPWMPin3_2, neg);
-        digitalWrite(motorOutputPWMPin3_1, arduino::LOW);
+        analogWrite(motorOutputPWMPin3_1, neg);
+        digitalWrite(motorOutputPWMPin3_2, arduino::LOW);
     }
     else{
-        analogWrite(motorOutputPWMPin3_1, motor1);
-        digitalWrite(motorOutputPWMPin3_2, arduino::LOW);
+        analogWrite(motorOutputPWMPin3_2, motor1);
+        digitalWrite(motorOutputPWMPin3_1, arduino::LOW);
     }
 
     if(motor4 < 0){

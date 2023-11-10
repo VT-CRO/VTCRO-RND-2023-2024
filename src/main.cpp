@@ -49,7 +49,7 @@ void setup() {
    MotorControl m;
    m.Motor_pin_init();
    m.Motor_start();
-  m.Motor_setSpeed(127,127,127,127);
+  m.Motor_setSpeed(-127,-127,-127,-127);
 
   vTaskStartScheduler();
 
