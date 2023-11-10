@@ -14,6 +14,8 @@ uint16_t sensorPins[] = {s0, s1, s2, s3, s4, s5, s6, s7};
 uint16_t readings[8];
 QTR_t data{};
 
+static const uint16_t IR_THRESHOLD = 900;
+
 void setup() {
   // put your setup code here, to run once:
   Serial.begin(9600);
@@ -35,6 +37,26 @@ void loop() {
   }
   
   delay(1000);
+}
+
+/* finds where the center of the yellow line is */
+double getCenter(uint16_t* sensorValues, int sensorCount) {
+  double average = 0.0;
+  uint8_t num_yellow_readings = 0;
+  for (uint8_t i = 0; i < sensorCount; i++) {
+    if (sensorValues[i] < IR_THRESHOLD) {
+      average += i;
+      num_yellow_readings++;
+    }
+  }
+
+  if (num_yellow_readings > 0) {
+    average = average / num_yellow_readings;
+    return average;
+  }
+  else {
+    return (double)(sensorCount-1) / 2.0;
+  }
 }
 
 void sensorRead(uint16_t* sensorValues, int sensorCount)
