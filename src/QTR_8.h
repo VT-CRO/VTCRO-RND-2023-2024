@@ -12,4 +12,4 @@ QTR_t QTR_init(uint16_t pins[], uint16_t data[], uint16_t sampleSize, uint16_t a
 
 int changeBit (int initialVal);
 
-void sensorRead(uint16_t* sensorValues, int sensorCount);
+void sensorRead(uint16_t sensorCount);

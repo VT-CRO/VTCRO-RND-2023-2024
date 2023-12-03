@@ -80,30 +80,31 @@ uint16_t sensorPins[] = {s0, s1, s2, s3, s4, s5, s6, s7, s8, s9, s10, s11, s12, 
 uint16_t readings[16];
 QTR_t data{};
 
+#define SENSOR_THRESHOLD 900
+
 FLASHMEM __attribute__((noinline)) void setup() {
   // put your setup code here, to run once:
   Serial.begin(115'200);
   data = QTR_init(sensorPins, readings, 4, 16);
 }
 
-void loop() {
-  // put your main code here, to run repeatedly:
-  
-  sensorRead(data.arrayLength);
+double findPos() {
 
-  for (uint8_t i = 0; i < data.arrayLength; i++)
-  {
-    Serial.print("Value at ");
-    Serial.print(i);
-    Serial.print(": ");
-    Serial.println(data.data[i]);
-    
+  uint16_t firstYellow = -1;
+  uint16_t lastYellow = -1;
+  for (int i = 0; i < data.arrayLength; i++) {
+    if (data.data[i] < SENSOR_THRESHOLD) { //if i is yellow
+      if (firstYellow != -1) 
+        firstYellow = i;
+      
+      lastYellow = i;
+    }
   }
-  
-  delay(1000);
+
+  double center = (double)(firstYellow + lastYellow) / 2.0;
 }
 
-void sensorRead(int sensorCount)
+void sensorRead(uint16_t sensorCount)
 {
     for (uint8_t r = 0; r < sensorCount; r += 1)
       {
@@ -125,6 +126,34 @@ void sensorRead(int sensorCount)
           4;
       }
 }
+
+void loop() {
+  // put your main code here, to run repeatedly:
+  /*  
+  sensorRead(data.data, 8);
+
+  for (uint8_t i = 0; i < data.arrayLength; i++)
+  {
+    Serial.print("Value at ");
+    Serial.print(i);
+    Serial.print(": ");
+    Serial.println(data.data[i]);
+    
+  }
+  
+  delay(1000);
+  */
+ 
+  sensorRead(data.arrayLength);
+  
+  double position = findPos();
+  double error = position - (double)data.arrayLength/2.0;
+  Serial.print("Error amount: ");
+  Serial.println(error);
+  
+}
+
+
 
 QTR_t QTR_init(uint16_t pins[], uint16_t data[], uint16_t sampleSize, uint16_t arrayLength)
 {
