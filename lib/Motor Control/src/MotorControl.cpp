@@ -31,7 +31,7 @@ MotorControl::MotorControl(){
     motorOutputPWMPin4_1 = 7;  //4.482 kHz - Pin 7
     motorOutputPWMPin4_2 = 8;  //4.482 kHz - Pin 8
 
-
+    speed = 128;
 }
 
 void MotorControl::Motor_setPIDParams(){
@@ -42,17 +42,18 @@ void MotorControl::Motor_setPIDParams(){
 // Need to test if 0% duty cycle is the same as logic low
 // default state moving forward. AnalogWrite values will be changed
 void MotorControl::Motor_start(){
-    analogWrite(motorOutputPWMPin1_1, 0);
-    analogWrite(motorOutputPWMPin1_2, 0);
+    // analogWrite(motorOutputPWMPin1_1, 0);
+    // analogWrite(motorOutputPWMPin1_2, 0);
 
-    analogWrite(motorOutputPWMPin2_1, 0);
-    analogWrite(motorOutputPWMPin2_2, 0);
+    // analogWrite(motorOutputPWMPin2_1, 0);
+    // analogWrite(motorOutputPWMPin2_2, 0);
 
-    analogWrite(motorOutputPWMPin3_1, 0);
-    analogWrite(motorOutputPWMPin3_2, 0);
+    // analogWrite(motorOutputPWMPin3_1, 0);
+    // analogWrite(motorOutputPWMPin3_2, 0);
 
-    analogWrite(motorOutputPWMPin4_1, 0);
-    analogWrite(motorOutputPWMPin4_2, 0);
+    // analogWrite(motorOutputPWMPin4_1, 0);
+    // analogWrite(motorOutputPWMPin4_2, 0);
+    startMove();
 }
 
 //don't do
@@ -165,4 +166,35 @@ void MotorControl::Motor_setDirection(int direction, int delay){
 
 void MotorControl::Motor_pidControlLoop(){
     
+}
+//Probably should make a struct for each of these
+void MotorControl::startMove(){
+  double increment = .01;
+  while (increment < 1){
+//alternatively I could just put the set speed function here
+//but then I would need to add argurments to the function
+  analogWrite(motorOutputPWMPin1_2 , increment*speed);
+  analogWrite(motorOutputPWMPin2_2 , increment*speed);
+  analogWrite(motorOutputPWMPin3_2 , increment*speed);
+  analogWrite(motorOutputPWMPin4_1 , increment*speed);
+  delay(1);
+  increment = increment + .01;
+  Serial.print(increment);
+  }
+}
+
+
+void MotorControl::stopMove(){
+    double increment = 0.01;
+  while (increment >  0){
+//alternatively I could just put the set speed function here
+//but then I would need to add argurments to the function
+  analogWrite(motorOutputPWMPin1_2 , increment*speed);
+  analogWrite(motorOutputPWMPin2_2 , increment*speed);
+  analogWrite(motorOutputPWMPin3_2 , increment*speed);
+  analogWrite(motorOutputPWMPin4_1 , increment*speed);
+  delay(1);
+  increment = increment - .01;
+  Serial.print(increment);
+    }
 }

@@ -46,17 +46,25 @@ void setup() {
   // Serial.println("setup(): starting scheduler...");
   // Serial.flush();
 
-   MotorControl m;
-   m.Motor_pin_init();
-   m.Motor_start();
-  m.Motor_setSpeed(-127,-127,-127,-127);
 
-  vTaskStartScheduler();
+   
+  //m.Motor_setSpeed(-127,-127,-127,-127)
+  
+ 
+
+  //vTaskStartScheduler();
 
 }
 
 
 void loop() {
   // put your main code here, to run repeatedly:
-
+  
+  MotorControl m;
+  m.Motor_pin_init();
+  while(1){
+  m.Motor_start();
+  delay(1000);
+  m.stopMove();
+  }
 }

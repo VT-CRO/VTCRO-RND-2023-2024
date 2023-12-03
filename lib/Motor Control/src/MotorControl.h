@@ -42,8 +42,15 @@ class MotorControl{
     //pid loop
     void Motor_pidControlLoop();
 
+    void stopMove();
+
     private:
 
+    void startMove();
+
+
+
+    //don't know whether we will still need this
     typedef struct{
     int motorId ;
     int encoderPos;
@@ -67,7 +74,7 @@ class MotorControl{
     int motorOutputPWMPin4_1;
     int motorOutputPWMPin4_2;
 
-
+    int speed;
 };
 //All the variables needed to control the motors
 
