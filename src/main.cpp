@@ -90,18 +90,24 @@ FLASHMEM __attribute__((noinline)) void setup() {
 
 double findPos() {
 
-  uint16_t firstYellow = -1;
-  uint16_t lastYellow = -1;
+  uint16_t firstYellow = data.arrayLength;
+  uint16_t lastYellow = data.arrayLength;
   for (int i = 0; i < data.arrayLength; i++) {
     if (data.data[i] < SENSOR_THRESHOLD) { //if i is yellow
-      if (firstYellow != -1) 
+      if (firstYellow == data.arrayLength) 
         firstYellow = i;
       
       lastYellow = i;
     }
   }
+  
+  if (firstYellow == data.arrayLength) {
+    Serial.println(data.arrayLength);
+    return data.arrayLength/2.0;
+  }
 
-  double center = (double)(firstYellow + lastYellow) / 2.0;
+  double center = ((double)(firstYellow + lastYellow)) / 2.0;
+  return center;
 }
 
 void sensorRead(uint16_t sensorCount)
@@ -141,16 +147,18 @@ void loop() {
     
   }
   
-  delay(1000);
+  
   */
  
   sensorRead(data.arrayLength);
   
   double position = findPos();
-  double error = position - (double)data.arrayLength/2.0;
+  Serial.print("Position: ");
+  Serial.println(position);
+  double error = position - data.arrayLength/2.0;
   Serial.print("Error amount: ");
   Serial.println(error);
-  
+  delay(1000);
 }
 
 
