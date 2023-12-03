@@ -48,11 +48,15 @@ void setup() {
 
 
    
-  //m.Motor_setSpeed(-127,-127,-127,-127)
+  MotorControl m;
+  m.Motor_pin_init();
+  m.Motor_start();
+  // while(1){
+  //   Serial.print("The motors should have started\n");
+  // }
+  m.Motor_setSpeed(127,127,127,127);
   
- 
-
-  //vTaskStartScheduler();
+  vTaskStartScheduler();
 
 }
 
@@ -60,11 +64,10 @@ void setup() {
 void loop() {
   // put your main code here, to run repeatedly:
   
-  MotorControl m;
-  m.Motor_pin_init();
-  while(1){
-  m.Motor_start();
-  delay(1000);
-  m.stopMove();
-  }
+  // MotorControl m;
+  // m.Motor_pin_init();
+  // while(1){
+  // m.Motor_start();
+  // delay(1000);
+  // m.stopMove();
 }

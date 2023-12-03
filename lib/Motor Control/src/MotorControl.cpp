@@ -32,6 +32,21 @@ MotorControl::MotorControl(){
     motorOutputPWMPin4_2 = 8;  //4.482 kHz - Pin 8
 
     speed = 128;
+
+    //i might be using these structs in instead because they are easier
+    // to use. Potientally.
+    Motor1.forward_pin = 1;
+    Motor1.back_pin = 2;
+
+    Motor2.forward_pin = 3;
+    Motor2.back_pin = 4;
+
+    Motor3.forward_pin = 5;
+    Motor3.back_pin = 6;
+
+    Motor4.forward_pin = 7;
+    Motor4.back_pin = 8;
+
 }
 
 void MotorControl::Motor_setPIDParams(){
@@ -42,17 +57,17 @@ void MotorControl::Motor_setPIDParams(){
 // Need to test if 0% duty cycle is the same as logic low
 // default state moving forward. AnalogWrite values will be changed
 void MotorControl::Motor_start(){
-    // analogWrite(motorOutputPWMPin1_1, 0);
-    // analogWrite(motorOutputPWMPin1_2, 0);
+    analogWrite(motorOutputPWMPin1_1, 0);
+    analogWrite(motorOutputPWMPin1_2, 0);
 
-    // analogWrite(motorOutputPWMPin2_1, 0);
-    // analogWrite(motorOutputPWMPin2_2, 0);
+    analogWrite(motorOutputPWMPin2_1, 0);
+    analogWrite(motorOutputPWMPin2_2, 0);
 
-    // analogWrite(motorOutputPWMPin3_1, 0);
-    // analogWrite(motorOutputPWMPin3_2, 0);
+    analogWrite(motorOutputPWMPin3_1, 0);
+    analogWrite(motorOutputPWMPin3_2, 0);
 
-    // analogWrite(motorOutputPWMPin4_1, 0);
-    // analogWrite(motorOutputPWMPin4_2, 0);
+    analogWrite(motorOutputPWMPin4_1, 0);
+    analogWrite(motorOutputPWMPin4_2, 0);
     startMove();
 }
 

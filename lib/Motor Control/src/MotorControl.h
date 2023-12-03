@@ -51,15 +51,28 @@ class MotorControl{
 
 
     //don't know whether we will still need this
-    typedef struct{
+    struct _MotorStruct{
     int motorId ;
     int encoderPos;
     int targetSpeed;
     int maxSpeed; 
-    
-    } _MotorStruct;
+    } ;
+
+    struct _Control{
+        int forward_pin;
+        int back_pin;
+        int speed;
+    };
 
     typedef _MotorStruct MotorStruct;
+    typedef _Control Control;
+
+
+
+    Control Motor1;
+    Control Motor2;
+    Control Motor3;
+    Control Motor4;
 
     //These names are temporary.
     int motorOutputPWMPin1_1;
