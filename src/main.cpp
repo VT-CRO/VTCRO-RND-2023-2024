@@ -80,7 +80,7 @@ uint16_t sensorPins[] = {s0, s1, s2, s3, s4, s5, s6, s7, s8, s9, s10, s11, s12, 
 uint16_t readings[16];
 QTR_t data{};
 
-#define SENSOR_THRESHOLD 900
+#define SENSOR_THRESHOLD 200
 
 FLASHMEM __attribute__((noinline)) void setup() {
   // put your setup code here, to run once:
@@ -122,7 +122,7 @@ void sensorRead(uint16_t sensorCount)
         for (uint8_t n = 0; n < sensorCount; n += 1)
         {
           // add the conversion result
-          data.data[n] += analogRead(data.pins[n]);
+          data.data[n] += map(analogRead(data.pins[n]), 0, 960, 0, 255);
         }
       }
 
