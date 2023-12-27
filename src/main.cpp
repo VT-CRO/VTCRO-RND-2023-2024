@@ -54,7 +54,7 @@ void setup() {
   // while(1){
   //   Serial.print("The motors should have started\n");
   // }
-  m.Motor_setSpeed(127,127,127,127);
+ // m.Motor_setSpeed(127,127,127,127);
   
   vTaskStartScheduler();
 
