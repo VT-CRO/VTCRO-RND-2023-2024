@@ -3,20 +3,22 @@
 
 #include "MotorControl.h"
 #include "Observer.hpp"
+#include "Encoder.h"
 
 #define NUM_MOTORS 4
+#define CONTROL_LOOP_FREQ 50
 
 /*
  * This class specifies the class interface for the chassis.
  * The chassis with the corresponding wheel numbers is as such:
  * 
- *          ^  = +x direction
- *          |
- *   [1]---------[2]
- *    |   Front   |
- *    |           |
- *    |           |
- *   [4]---------[3]
+ *                 ^  +x
+ *                 |
+ *          [1]---------[2]
+ *           |   Front   |
+ *   +y <--- |     x z+  |
+ *           |           |
+ *          [4]---------[3]
  */ 
 class Chassis {
 public:
@@ -29,19 +31,19 @@ public:
 
   void init();
   void chassisControl();
+  void vInitChassisControlTimer();
 
 private:
   // Motor control
   MotorControl motors;
-  int _wheel_speeds[4];
+  int _wheel_speeds[NUM_MOTORS];
+  Encoder * encs[NUM_MOTORS];
 
   // Line following
   Observer<int> line_follower;
 
   // gain for linefollowing process
-  int _line_following_gain,
-  // Parameters for wheel pid
-  _p, _i, _d;
+  int _line_following_gain;
 
   // Chassis dimensions
   double chassis_length, chassis_width;
@@ -58,6 +60,10 @@ private:
 
   // use as a callback function for the linefollowing sensor
   void update_center_err(int err);
+
+  static void vChassisControlTimerCb(TimerHandle_t xTimer);
+  TimerHandle_t _loop_timer;
+  static Chassis* instance;
 };
 
 #endif // !CHASSIS_H

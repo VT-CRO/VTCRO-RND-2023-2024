@@ -11,6 +11,8 @@
 //check platform IO path .platformio\packages\framework-arduinoteensy-ts\cores\teensy4 for pwm.c file
 #include <MotorControl.h>
 
+uint8_t MotorControl::num_instances = 0;
+
 //Motor Control Constructor
 // Assigns values to the pin variables
 // default PWM vals found at this link https://www.pjrc.com/teensy/td_pulse.html
@@ -213,5 +215,22 @@ void MotorControl::stopMove(){
   delay(1);
   increment = increment - .01;
   Serial.print(increment);
+    }
+}
+
+void MotorControl::vMotorPIDTimerCallback(TimerHandle_t xTimer)
+{
+    int32_t id = (int32_t)pvTimerGetTimerID(xTimer);
+
+    instances[id]->Motor_pidControlLoop();
+}
+
+void MotorControl::vInitMotorPIDTimer()
+{
+    if (num_instances < MAX_INSTANCES) {
+        _pid_timer = xTimerCreate("PID Timer", pdMS_TO_TICKS(1 / pid.freq), pdTRUE, (void *)(num_instances++), MotorControl::vMotorPIDTimerCallback);
+        if (_pid_timer == NULL) while(1);
+        else
+            if( xTimerStart(_pid_timer, 0) != pdPASS ) while(1);
     }
 }

@@ -16,9 +16,12 @@
 #include <avr/io.h>
 #include <avr/pgmspace.h>
 #include "arduino_freertos.h"
+#include "timers.h"
+#include "Encoder.h"
 
+#define MAX_INSTANCES 10
 
-class MotorControl{
+class MotorControl : public Observer<Encoder_state_t> {
 
     public:
 
@@ -45,11 +48,11 @@ class MotorControl{
 
     void stopMove();
 
+    void vInitMotorPIDTimer();
+
     private:
 
     void startMove();
-
-
 
     //don't know whether we will still need this
     struct _MotorStruct{
@@ -57,7 +60,7 @@ class MotorControl{
     int encoderPos;
     int targetSpeed;
     int maxSpeed; 
-    } ;
+    };
 
     struct _Control{
         int forward_pin;
@@ -65,15 +68,26 @@ class MotorControl{
         int speed;
     };
 
+    struct _MotorPID{
+        double P, I, D;
+        int freq;
+    };
+
     typedef _MotorStruct MotorStruct;
     typedef _Control Control;
-
-
+    typedef _MotorPID MotorPID;
 
     Control Motor1;
     Control Motor2;
     Control Motor3;
     Control Motor4;
+
+    MotorPID pid;
+
+    static MotorControl *instances[MAX_INSTANCES];
+    static uint8_t num_instances;
+    static void vMotorPIDTimerCallback(TimerHandle_t xTimer);
+    TimerHandle_t _pid_timer;
 
     //These names are temporary.
     int motorOutputPWMPin1_1;
