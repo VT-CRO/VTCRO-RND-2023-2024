@@ -3,7 +3,7 @@
 
 #include <Observer.hpp>
 #include <Subject.hpp>
-#include <Encoder.h>
+#include <QDC.h>
 #include <Chassis.h>
 
 FLASHMEM __attribute__((noinline))

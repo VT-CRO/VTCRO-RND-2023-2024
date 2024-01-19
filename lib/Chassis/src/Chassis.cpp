@@ -12,8 +12,6 @@ Chassis::Chassis()
         // set motor other parameters
         // set motor PID parameters
         // set motors to listen to encoders
-        encs[i] = new Encoder(1, 2, 3, 4, 5, 6, 7); // Dummy pins for now
-        encs[i]->attachObserver(motors);
 
         // initialize motor pid timers and set callback function
         motors.vInitMotorPIDTimer();

@@ -17,11 +17,10 @@
 #include <avr/pgmspace.h>
 #include "arduino_freertos.h"
 #include "timers.h"
-#include "Encoder.h"
 
 #define MAX_INSTANCES 10
 
-class MotorControl : public Observer<Encoder_state_t> {
+class MotorControl {
 
     public:
 

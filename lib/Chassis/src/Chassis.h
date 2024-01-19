@@ -3,7 +3,6 @@
 
 #include "MotorControl.h"
 #include "Observer.hpp"
-#include "Encoder.h"
 
 #define NUM_MOTORS 4
 #define CONTROL_LOOP_FREQ 50
@@ -37,7 +36,6 @@ private:
   // Motor control
   MotorControl motors;
   int _wheel_speeds[NUM_MOTORS];
-  Encoder * encs[NUM_MOTORS];
 
   // Line following
   Observer<int> line_follower;

@@ -34,7 +34,13 @@
         "system_error": "cpp",
         "tuple": "cpp",
         "type_traits": "cpp",
-        "typeinfo": "cpp"
+        "typeinfo": "cpp",
+        "_encoder.h": "c",
+        "qdc.h": "c",
+        "arduino.h": "c",
+        "atomic": "c",
+        "wprogram.h": "c",
+        "hardwareserial.h": "c"
     },
     "C_Cpp.default.compilerPath": "/root/.platformio/packages/toolchain-arm-cortexm-linux/bin/arm-cortexm7f-eabi-gcc"
 }
