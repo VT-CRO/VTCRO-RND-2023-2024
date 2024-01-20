@@ -1,15 +1,26 @@
+/////////////////////////////////////////////////////////////
+// Author: Jayson De La Vega   R&D Team VT CRO
+// filename: Chassis.h
+// Last Modified: 1/24/2024
+// Description:  This file contains class declarations for
+//               a meccanum chassis object
+///////////////////////////////////////////////////////////// 
 #ifndef CHASSIS_H
 #define CHASSIS_H
 
 #include "MotorControl.h"
 #include "Observer.hpp"
+#include "ros.h"
+#include "geometry_msgs/Twist.h"
 
 #define NUM_MOTORS 4
 #define CONTROL_LOOP_FREQ 50
 
+#define tskCHASSIS_PRIORITY 2
+
 /*
  * This class specifies the class interface for the chassis.
- * The chassis with the corresponding wheel numbers is as such:
+ * The chassis, with the corresponding wheel numbers is as such:
  * 
  *                 ^  +x
  *                 |
@@ -28,40 +39,28 @@ public:
   Chassis &operator=(const Chassis &) = default;
   ~Chassis();
 
-  void init();
-  void chassisControl();
-  void vInitChassisControlTimer();
+  bool initTask(ros::NodeHandle *nh);
 
 private:
+
   // Motor control
   MotorControl motors;
   int _wheel_speeds[NUM_MOTORS];
 
   // Line following
   Observer<int> line_follower;
-
-  // gain for linefollowing process
   int _line_following_gain;
 
-  // Chassis dimensions
-  double chassis_length, chassis_width;
+  double _chassis_length, _chassis_width;
 
-  struct Twist {
-    int x; int y; int w;
-  };
-  typedef struct Twist Twist;
+  void subscriber_cb(const geometry_msgs::Twist &cmd_vel);
+  ros::NodeHandle *_nh;
+  ros::Subscriber<geometry_msgs::Twist, Chassis> sub;
+  geometry_msgs::Twist _cmd_vel;
 
-  Twist _cmd_vel;
-
-  // feed in rosserial cmd_vel message into this function to get wheel speeds
-  void meccanum_kinematics(Twist cmd_vel);
-
-  // use as a callback function for the linefollowing sensor
-  void update_center_err(int err);
-
-  static void vChassisControlTimerCb(TimerHandle_t xTimer);
-  TimerHandle_t _loop_timer;
-  static Chassis* instance;
+  void meccanum_kinematics(geometry_msgs::Twist cmd_vel);
+  static void chassisControl_task(void * pvParameters);
+  void chassisControl();
 };
 
 #endif // !CHASSIS_H

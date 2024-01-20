@@ -1,10 +1,13 @@
 /////////////////////////////////////////////////////////////
 // Author: Jayson De La Vega   R&D Team VT CRO
-// filename: QDC.h
+// filename: QDC.cpp
 // Last Modified: 1/24/2024
 // Description:  This file contains function and struct 
 //               definitions for the Quadrature Decoder
 //               peripheral of Teensy 4.x boards
+//               
+//               Adapted from:
+//               https://github.com/mjs513/Teensy-4.x-Quad-Encoder-Library/tree/master
 //
 //        *Note: This was originally written as a .c file
 //               but imports didn't work for some reason
@@ -12,15 +15,17 @@
 ///////////////////////////////////////////////////////////// 
 #include "QDC.h"
 
-static QDC_channel_t channel[] = {
+static void xbara_pin_map(QDC_t *qdc, uint16_t pin, QDC_pin func, uint8_t PUS);
+static void xbar_connect(unsigned int input, unsigned int output);
+
+static const QDC_channel_t channel[] = {
     {0, &IMXRT_ENC1, IRQ_ENC1, 66, 67, 68, 69, 70, &CCM_CCGR4, CCM_CCGR4_ENC1(CCM_CCGR_ON)}, // this is a dummy entry - use 1-4 for channels
     {1, &IMXRT_ENC1, IRQ_ENC1, 66, 67, 68, 69, 70, &CCM_CCGR4, CCM_CCGR4_ENC1(CCM_CCGR_ON)},
     {2, &IMXRT_ENC2, IRQ_ENC2, 71, 72, 73, 74, 75, &CCM_CCGR4, CCM_CCGR4_ENC2(CCM_CCGR_ON)},
     {3, &IMXRT_ENC3, IRQ_ENC3, 76, 77, 78, 79, 80, &CCM_CCGR4, CCM_CCGR4_ENC3(CCM_CCGR_ON)},
-    {4, &IMXRT_ENC4, IRQ_ENC4, 81, 82, 83, 84, 85, &CCM_CCGR4, CCM_CCGR4_ENC4(CCM_CCGR_ON)}};
+    {4, &IMXRT_ENC4, IRQ_ENC4, 81, 82, 83, 84, 85, &CCM_CCGR4, CCM_CCGR4_ENC4(CCM_CCGR_ON)}
+};
 
-static void xbara_pin_map(QDC_t *qdc, uint16_t pin, QDC_pin func, uint8_t PUS);
-static void xbar_connect(unsigned int input, unsigned int output);
 
 QDC_t QDC_create()
 {
@@ -29,9 +34,9 @@ QDC_t QDC_create()
     return qdc;
 }
 
-void QDC_setConfig(QDC_t *qdc, QDC_config_t config)
+void QDC_setConfig(QDC_t *qdc, QDC_config_t *config)
 {
-    qdc->config = config;
+    qdc->config = *config;
 }
 
 QDC_config_t QDC_makeDefaultConfig()
@@ -304,4 +309,18 @@ void xbar_connect(unsigned int input, unsigned int output)
     volatile uint8_t *xbar = (volatile uint8_t *)XBARA1_SEL0;
     xbar[output] = input;
 #endif
+}
+
+uint32_t QDC_getCTRLIRQStatus(QDC_t * qdc)
+{
+    uint32_t enabledInterrupts = channel[qdc->channel].ENC->CTRL | QDC_CTRL_XIE_MASK | QDC_CTRL_HIE_MASK | QDC_CTRL_CMPIE_MASK;
+    uint32_t triggeredInterrupts = channel[qdc->channel].ENC->CTRL | QDC_CTRL_XIE_MASK | QDC_CTRL_HIRQ_MASK | QDC_CTRL_CMPIRQ_MASK;
+    return triggeredInterrupts & (enabledInterrupts << 1);
+}
+
+uint32_t QDC_getCTRL2IRQStatus(QDC_t * qdc)
+{
+    uint32_t enabledInterrupts = channel[qdc->channel].ENC->CTRL2 | QDC_CTRL2_ROEI_MASK | QDC_CTRL2_RUIRQ_MASK;
+    uint32_t triggeredInterrupts = channel[qdc->channel].ENC->CTRL2 | QDC_CTRL2_ROIRQ_MASK | QDC_CTRL2_RUIRQ_MASK;
+    return triggeredInterrupts & (enabledInterrupts << 1);
 }

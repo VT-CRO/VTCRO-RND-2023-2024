@@ -2,10 +2,12 @@
 // Author: Jayson De La Vega   R&D Team VT CRO
 // filename: QDC.h
 // Last Modified: 1/24/2024
-// Contact: jaysond21@vt.edu
 // Description:  This file contains function and struct 
 //               declarations for the Quadrature Decoder
 //               peripheral of Teensy 4.x boards
+//               
+//               Adapted from:
+//               https://github.com/mjs513/Teensy-4.x-Quad-Encoder-Library/tree/master
 ///////////////////////////////////////////////////////////// 
 #ifndef QDC_H
 #define QDC_H
@@ -33,7 +35,7 @@ extern "C" {
 #define QDC_CTRL_CMPIRQ_MASK (1 << 2)
 #define QDC_CTRL_CMPIE_MASK (1 << 0)
 
-#define QDC_CTRL2_SABIRQ_MASK (1 <  11)
+#define QDC_CTRL2_SABIRQ_MASK (1 <  12)
 #define QDC_CTRL2_OUTCTL_MASK (1 << 9)
 #define QDC_CTRL2_REVMOD_MASK (1 << 8)
 #define QDC_CTRL2_ROIRQ_MASK  (1 << 7)
@@ -82,6 +84,11 @@ extern "C" {
 #define QDC_positionRUFlag          (1 << 6)
 #define QDC_lastDirectionFlag       (1 << 7)
 
+// #define QDC_INDEX_IRQ(n)    (QDC_CTRL_XIRQ_MASK == QDC_CTRL_XIRQ_MASK & channel[n].ENC->CTRL) && (QDC_CTRL_XIE_MASK & channel[index].ENC->CTRL)
+// #define QDC_RO_IRQ(n)       (QDC_CTRL2_ROIRQ_MASK == QDC_CTRL2_ROIRQ_MASK & channel[n].ENC->CTRL2)
+// #define QDC_RU_IRQ(n)       (QDC_CTRL2_RUIRQ_MASK == QDC_CTRL2_RUIRQ_MASK & channel[n].ENC->CTRL2)
+// #define QDC_HOME_IRQ(n)     (QDC_CTRL_HIRQ_MASK == QDC_CTRL_HIRQ_MASK & channel[n].ENC->CTRL) && (QDC_CTRL_HIE_MASK & channel[index].ENC->CTRL)
+// #define QDC_CMP_IRQ(n)      (QDC_CTRL_CMPIRQ_MASK == QDC_CTRL_CMPIRQ_MASK & channel[n].ENC->CTRL)
 
 typedef enum {
   PHASEA, PHASEB, HOME, INDEX, TRIGGER
@@ -142,7 +149,7 @@ typedef struct {
 } QDC_t;
 
 QDC_t QDC_create();
-void QDC_setConfig(QDC_t* qdc, QDC_config_t config);
+void QDC_setConfig(QDC_t* qdc, QDC_config_t* config);
 QDC_config_t QDC_makeConfig();
 void QDC_mapDigitalPins(QDC_t * qdc, uint8_t phaseA, uint8_t phaseB, uint8_t index, uint8_t home, uint8_t trigger, uint8_t pin_pus);
 void QDC_enableInterrupts(QDC_t * qdc);
@@ -157,6 +164,8 @@ uint16_t QDC_getPositionDifference(QDC_t * qdc);
 uint16_t QDC_getPositionDifferenceHold(QDC_t * qdc);
 uint16_t QDC_getRevolutions(QDC_t * qdc);
 uint16_t QDC_getRevolutionsHold(QDC_t * qdc);
+uint32_t QDC_getCTRLIRQStatus(QDC_t * qdc);
+uint32_t QDC_getCTRL2IRQStatus(QDC_t * qdc);
 
 #ifdef __cplusplus
 }

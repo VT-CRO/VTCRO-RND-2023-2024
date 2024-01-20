@@ -1,58 +1,77 @@
+/////////////////////////////////////////////////////////////
+// Author: Jayson De La Vega   R&D Team VT CRO
+// filename: Chassis.cpp
+// Last Modified: 1/24/2024
+// Description:  This file contains class declarations for
+//               a mecannum chassis object
+///////////////////////////////////////////////////////////// 
 #include "Chassis.h"
 
-Chassis* Chassis::instance;
-
 Chassis::Chassis()
+    : sub("cmd_vel", &Chassis::subscriber_cb, this)
 {
-    instance = this;
-
     for(int i = 0; i < NUM_MOTORS; ++i)
     {
-        // set motor in PID mode
-        // set motor other parameters
-        // set motor PID parameters
-        // set motors to listen to encoders
+        // TODO:
+        //  - set motor in PID mode
+        //  - set motor other parameters
+        //  - set motor PID parameters
+        //  - set motors to listen to encoders
 
         // initialize motor pid timers and set callback function
+        // TODO: replace timer-based pid with tasks
         motors.vInitMotorPIDTimer();
     }
 
-    // QRT_Sensor.attachObserver(line_follower)
-
-    // set chassis to subscribe to rosserial cmd_vel message
+    // TODO: QRT_Sensor.attachObserver(line_follower)
 }
 
-void Chassis::meccanum_kinematics(Twist cmd_vel)
+bool Chassis::initTask(ros::NodeHandle *nh)
 {
-    _wheel_speeds[0] = (-1 * (chassis_length + chassis_width) * cmd_vel.w) + cmd_vel.x - cmd_vel.y;
-    _wheel_speeds[1] = ((chassis_length + chassis_width) * cmd_vel.w) + cmd_vel.x + cmd_vel.y;
-    _wheel_speeds[2] = ((chassis_length + chassis_width) * cmd_vel.w) + cmd_vel.x - cmd_vel.y;
-    _wheel_speeds[3] = (-1 * (chassis_length + chassis_width) * cmd_vel.w) + cmd_vel.x + cmd_vel.y;
+    _nh = nh;
+    _nh->subscribe(sub);
+
+    // initialize motor tasks
+
+    if (xTaskCreate(Chassis::chassisControl_task, "chassis control task", 100, this, tskIDLE_PRIORITY + tskCHASSIS_PRIORITY, NULL) != pdTRUE)
+        return 1;
+    return 0;
+}
+
+void Chassis::subscriber_cb(const geometry_msgs::Twist &cmd_vel)
+{
+    _cmd_vel = cmd_vel;
+}
+
+void Chassis::meccanum_kinematics(geometry_msgs::Twist cmd_vel)
+{
+    float x = cmd_vel.linear.x;
+    float y = cmd_vel.linear.y;
+    float w = cmd_vel.angular.z;
+
+    // Standard kinematic algorithms for meccanum chassis taken from:
+    // https://nu-msr.github.io/navigation_site/lectures/derive_kinematics.html
+    _wheel_speeds[0] = (-1 * (_chassis_length + _chassis_width) * w) + x - y;
+    _wheel_speeds[1] = ((_chassis_length + _chassis_width) * w) + x + y;
+    _wheel_speeds[2] = ((_chassis_length + _chassis_width) * w) + x - y;
+    _wheel_speeds[3] = (-1 * (_chassis_length + _chassis_width) * w) + x + y;
 }
 
 // use as ros subscriber callback function
+void Chassis::chassisControl_task(void * pvParameters)
+{
+    Chassis* instance = (Chassis *)pvParameters;
+    instance->chassisControl();
+}
+
 void Chassis::chassisControl()
 {
-    // get Pose2D from rosserial
-
     // to compensate for off-centeredness, we add chassis velocity in the y direction
-    _cmd_vel.y -= _line_following_gain * line_follower.getState();
+    _cmd_vel.linear.y -= _line_following_gain * line_follower.getState();
 
     meccanum_kinematics(_cmd_vel);
 
     motors.Motor_setSpeed(_wheel_speeds[0], _wheel_speeds[1], _wheel_speeds[2], _wheel_speeds[3]);
+
     // Motor PID control loop handled in a separate RTOS thread
-}
-
-void Chassis::vInitChassisControlTimer()
-{
-    _loop_timer = xTimerCreate("Chassis Control Loop Timer", pdMS_TO_TICKS(1 / CONTROL_LOOP_FREQ), pdTRUE, (void *)0, Chassis::vChassisControlTimerCb);
-    if (_loop_timer == NULL) while(1);
-    else
-        if( xTimerStart(_loop_timer, 0) != pdPASS ) while(1);
-}
-
-void Chassis::vChassisControlTimerCb(TimerHandle_t xTimer)
-{
-    Chassis::instance->chassisControl();
 }
