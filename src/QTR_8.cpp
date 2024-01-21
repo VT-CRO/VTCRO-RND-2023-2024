@@ -22,11 +22,10 @@ QTR_t data{};
 
 #define SENSOR_THRESHOLD 900
 
-FLASHMEM __attribute__((noinline)) void setup() {
-  // put your setup code here, to run once:
-  Serial.begin(115'200);
-  data = QTR_init(sensorPins, readings, 4, 16);
-}
+// TODO: Refactor as class
+// TODO: create an initialization function to create the task. Look at chassis's initTask, chassisControl_task for examples. Don't worry about ros::Nodehandle  *nh because line follower doesnt need,
+// TODO: edit line follower function calls in chassis control to match declarations here.
+// TODO: initailize line followers in chassis contructor
 
 double findPos() {
 
