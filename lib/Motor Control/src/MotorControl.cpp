@@ -15,17 +15,7 @@
 // Have a function that allows the encoder to listen to state of motor
 // of the encoder
 
-//Have a function to enable PID - complete
-
-//Make the functionality for the PID loop
-
-//look at chasis branch  - complete
-
-//creak initalize task in constructor - complete?
-
-//create PID_task function and link to PID_loop function - complere
-
-
+//Make the functionality for the PID loop - complete?
 
 // Motor Control Constructor
 // Assigns values to the pin variables

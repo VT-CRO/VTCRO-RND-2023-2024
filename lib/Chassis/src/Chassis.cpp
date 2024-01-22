@@ -1,5 +1,7 @@
 /////////////////////////////////////////////////////////////
 // Author: Jayson De La Vega   R&D Team VT CRO
+// modified by: Domenic Marcelli
+// modification: changed PID timer task to pid_task on line 25
 // filename: Chassis.cpp
 // Last Modified: 1/24/2024
 // Description:  This file contains class declarations for
@@ -19,8 +21,8 @@ Chassis::Chassis()
         //  - set motors to listen to encoders
 
         // initialize motor pid timers and set callback function
-        // TODO: replace timer-based pid with tasks
-        motors.vInitMotorPIDTimer();
+        
+        motors.pid_task(this);
     }
 
     // TODO: QRT_Sensor.attachObserver(line_follower)
@@ -79,6 +81,7 @@ void Chassis::chassisControl()
     meccanum_kinematics(_cmd_vel);
 
     // TODO: Change motors.Motor_setSpeed(_wheel_speeds[0], _wheel_speeds[1], _wheel_speeds[2], _wheel_speeds[3]);
-
+    //assume encoders are going to have a function called setspeed;
+    
     // Motor PID control loop handled in a separate RTOS thread
 }
