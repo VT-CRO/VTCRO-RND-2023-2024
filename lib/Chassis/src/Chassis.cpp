@@ -8,7 +8,7 @@
 #include "Chassis.h"
 
 Chassis::Chassis()
-    : sub("cmd_vel", &Chassis::subscriber_cb, this)
+    : sub("/cmd_vel", &Chassis::subscriber_cb, this)
 {
     for(int i = 0; i < NUM_MOTORS; ++i)
     {
@@ -61,7 +61,14 @@ void Chassis::meccanum_kinematics(geometry_msgs::Twist cmd_vel)
 void Chassis::chassisControl_task(void * pvParameters)
 {
     Chassis* instance = (Chassis *)pvParameters;
-    instance->chassisControl();
+
+    TickType_t ui32WakeTime = xTaskGetTickCount();
+
+    while (1) {
+        instance->chassisControl();
+
+        xTaskDelayUntil(&ui32WakeTime, pdMS_TO_TICKS(CONTROL_LOOP_PERIOD));
+    }
 }
 
 void Chassis::chassisControl()
@@ -71,7 +78,7 @@ void Chassis::chassisControl()
 
     meccanum_kinematics(_cmd_vel);
 
-    motors.Motor_setSpeed(_wheel_speeds[0], _wheel_speeds[1], _wheel_speeds[2], _wheel_speeds[3]);
+    // TODO: Change motors.Motor_setSpeed(_wheel_speeds[0], _wheel_speeds[1], _wheel_speeds[2], _wheel_speeds[3]);
 
     // Motor PID control loop handled in a separate RTOS thread
 }

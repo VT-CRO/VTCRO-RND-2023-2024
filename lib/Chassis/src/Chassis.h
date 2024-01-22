@@ -12,11 +12,12 @@
 #include "Observer.hpp"
 #include "ros.h"
 #include "geometry_msgs/Twist.h"
+#include "arduino_freertos.h"
 
 #define NUM_MOTORS 4
-#define CONTROL_LOOP_FREQ 50
+#define CONTROL_LOOP_PERIOD 50
 
-#define tskCHASSIS_PRIORITY 2
+#define tskCHASSIS_PRIORITY 1
 
 /*
  * This class specifies the class interface for the chassis.
