@@ -9,6 +9,8 @@
 //Notes: Here is a sensor I found that using the pins https://github.com/roggenkamps/teensy-thermoled/blob/master/tempsens.c
 // we have four motors
 
+//After discussion with Jason, make this general and one motor at a time
+//so get rid of multiple pins and make it only one
 
 #ifndef MOTORCONTROL_H_
 #define MOTORCONTROL_H_
@@ -16,92 +18,66 @@
 #include <avr/io.h>
 #include <avr/pgmspace.h>
 #include "arduino_freertos.h"
-#include "timers.h"
 
-#define MAX_INSTANCES 10
+#define tskPID_PRIORITY 7  //can be changed. Up for discussion
 
-class MotorControl {
+#define PID_LOOP_PERIOD 50
+
+class MotorControl{
 
     public:
 
-    MotorControl();
+    MotorControl(int pin1, int pin2);
 
     //Sets the PID Params
-    void Motor_setPIDParams();
+    void Motor_setPIDParams(float P, float I, float D);
 
-    //Starts the motors
-    void Motor_start();
-
-    void Motor_dispatch();
+    //Starts the motors and changes speed
+    void Motor_start(int newSpeed);
 
     void Motor_pin_init();
 
-    //sets the speed
-    void Motor_setSpeed(int motor1, int motor2, int motor3, int motor4);
-
     //sets the motor direction
+    //Might not need this
     void Motor_setDirection(int direction, int delay);
+
+    //task for freeRTOS
+    static void pid_task(void * pidParams);
 
     //pid loop
     void Motor_pidControlLoop();
 
-    void stopMove();
-
-    void vInitMotorPIDTimer();
+    void Motor_stopMove();
 
     private:
 
-    void startMove();
-
-    //don't know whether we will still need this
-    struct _MotorStruct{
-    int motorId ;
-    int encoderPos;
-    int targetSpeed;
-    int maxSpeed; 
-    };
-
-    struct _Control{
-        int forward_pin;
-        int back_pin;
-        int speed;
-    };
-
-    struct _MotorPID{
-        double P, I, D;
-        int freq;
-    };
-
-    typedef _MotorStruct MotorStruct;
-    typedef _Control Control;
-    typedef _MotorPID MotorPID;
-
-    Control Motor1;
-    Control Motor2;
-    Control Motor3;
-    Control Motor4;
-
-    MotorPID pid;
-
-    static MotorControl *instances[MAX_INSTANCES];
-    static uint8_t num_instances;
-    static void vMotorPIDTimerCallback(TimerHandle_t xTimer);
-    TimerHandle_t _pid_timer;
-
-    //These names are temporary.
-    int motorOutputPWMPin1_1;
-    int motorOutputPWMPin1_2;
-
-    int motorOutputPWMPin2_1;
-    int motorOutputPWMPin2_2;
-
-    int motorOutputPWMPin3_1;
-    int motorOutputPWMPin3_2;
-
-    int motorOutputPWMPin4_1;
-    int motorOutputPWMPin4_2;
+    //changes the go and no_go pins depending on whether the speed is positive or negative 
+    void checkDirection(int speed);
 
     int speed;
+
+    int current_velocity;
+    int goal_velocity;
+
+    int last_error;
+
+    int go_pin;
+    int no_go_pin;
+
+    struct _PinAssign {
+        int in1;
+        int in2;
+    };
+
+    typedef _PinAssign PinAssign;
+
+    PinAssign Assignments;
+ 
+    int motorP;
+    int motorI;
+    int motorD;
+
+
 };
 //All the variables needed to control the motors
 
