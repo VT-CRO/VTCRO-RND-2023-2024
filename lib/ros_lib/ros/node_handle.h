@@ -104,27 +104,52 @@ template<class Hardware,
 class NodeHandle_ : public NodeHandleBase_
 {
 protected:
-  Hardware hardware_{};
+  Hardware hardware_;
 
   /* time used for syncing */
-  uint32_t rt_time{0};
+  uint32_t rt_time;
 
   /* used for computing current time */
-  uint32_t sec_offset{0}, nsec_offset{0};
+  uint32_t sec_offset, nsec_offset;
 
   /* Spinonce maximum work timeout */
-  uint32_t spin_timeout_{0};
+  uint32_t spin_timeout_;
 
-  uint8_t message_in[INPUT_SIZE] = {0};
-  uint8_t message_out[OUTPUT_SIZE] = {0};
+  uint8_t message_in[INPUT_SIZE];
+  uint8_t message_out[OUTPUT_SIZE];
 
-  Publisher * publishers[MAX_PUBLISHERS] = {nullptr};
-  Subscriber_ * subscribers[MAX_SUBSCRIBERS] {nullptr};
+  Publisher * publishers[MAX_PUBLISHERS];
+  Subscriber_ * subscribers[MAX_SUBSCRIBERS];
 
   /*
    * Setup Functions
    */
 public:
+  NodeHandle_() : configured_(false)
+  {
+
+    for (unsigned int i = 0; i < MAX_PUBLISHERS; i++)
+      publishers[i] = 0;
+
+    for (unsigned int i = 0; i < MAX_SUBSCRIBERS; i++)
+      subscribers[i] = 0;
+
+    for (unsigned int i = 0; i < INPUT_SIZE; i++)
+      message_in[i] = 0;
+
+    for (unsigned int i = 0; i < OUTPUT_SIZE; i++)
+      message_out[i] = 0;
+
+    req_param_resp.ints_length = 0;
+    req_param_resp.ints = NULL;
+    req_param_resp.floats_length = 0;
+    req_param_resp.floats = NULL;
+    req_param_resp.ints_length = 0;
+    req_param_resp.ints = NULL;
+
+    spin_timeout_ = 0;
+  }
+
   Hardware* getHardware()
   {
     return &hardware_;
@@ -164,19 +189,19 @@ public:
   }
 
 protected:
-  // State machine variables for spinOnce
-  int mode_{0};
-  int bytes_{0};
-  int topic_{0};
-  int index_{0};
-  int checksum_{0};
+  //State machine variables for spinOnce
+  int mode_;
+  int bytes_;
+  int topic_;
+  int index_;
+  int checksum_;
 
-  bool configured_{false};
+  bool configured_;
 
   /* used for syncing the time */
-  uint32_t last_sync_time{0};
-  uint32_t last_sync_receive_time{0};
-  uint32_t last_msg_timeout_time{0};
+  uint32_t last_sync_time;
+  uint32_t last_sync_receive_time;
+  uint32_t last_msg_timeout_time;
 
 public:
   /* This function goes in your loop() function, it handles
@@ -184,7 +209,7 @@ public:
    */
 
 
-  virtual int spinOnce() override
+  virtual int spinOnce()
   {
     /* restart if timed out */
     uint32_t c_time = hardware_.time();
@@ -308,7 +333,7 @@ public:
           else if (topic_ == TopicInfo::ID_PARAMETER_REQUEST)
           {
             req_param_resp.deserialize(message_in);
-            param_received = true;
+            param_recieved = true;
           }
           else if (topic_ == TopicInfo::ID_TX_STOP)
           {
@@ -335,7 +360,7 @@ public:
 
 
   /* Are we connected to the PC? */
-  virtual bool connected() override
+  virtual bool connected()
   {
     return configured_;
   };
@@ -374,7 +399,7 @@ public:
     return current_time;
   }
 
-  void setNow(const Time & new_now)
+  void setNow(Time & new_now)
   {
     uint32_t ms = hardware_.time();
     sec_offset = new_now.sec - ms / 1000 - 1;
@@ -403,13 +428,14 @@ public:
   }
 
   /* Register a new subscriber */
-  bool subscribe(Subscriber_& s)
+  template<typename SubscriberT>
+  bool subscribe(SubscriberT& s)
   {
     for (int i = 0; i < MAX_SUBSCRIBERS; i++)
     {
       if (subscribers[i] == 0) // empty slot
       {
-        subscribers[i] = &s;
+        subscribers[i] = static_cast<Subscriber_*>(&s);
         s.id_ = i + 100;
         return true;
       }
@@ -422,8 +448,16 @@ public:
   bool advertiseService(ServiceServer<MReq, MRes, ObjT>& srv)
   {
     bool v = advertise(srv.pub);
-    bool w = subscribe(srv);
-    return v && w;
+    for (int i = 0; i < MAX_SUBSCRIBERS; i++)
+    {
+      if (subscribers[i] == 0) // empty slot
+      {
+        subscribers[i] = static_cast<Subscriber_*>(&srv);
+        srv.id_ = i + 100;
+        return v;
+      }
+    }
+    return false;
   }
 
   /* Register a new Service Client */
@@ -431,8 +465,16 @@ public:
   bool serviceClient(ServiceClient<MReq, MRes>& srv)
   {
     bool v = advertise(srv.pub);
-    bool w = subscribe(srv);
-    return v && w;
+    for (int i = 0; i < MAX_SUBSCRIBERS; i++)
+    {
+      if (subscribers[i] == 0) // empty slot
+      {
+        subscribers[i] = static_cast<Subscriber_*>(&srv);
+        srv.id_ = i + 100;
+        return v;
+      }
+    }
+    return false;
   }
 
   void negotiateTopics()
@@ -466,7 +508,7 @@ public:
     configured_ = true;
   }
 
-  virtual int publish(int id, const Msg * msg) override
+  virtual int publish(int id, const Msg * msg)
   {
     if (id >= 100 && !configured_)
       return 0;
@@ -506,7 +548,7 @@ public:
    * Logging
    */
 
-protected:
+private:
   void log(char byte, const char * msg)
   {
     rosserial_msgs::Log l;
@@ -541,18 +583,18 @@ public:
    * Parameters
    */
 
-protected:
-  bool param_received{false};
-  rosserial_msgs::RequestParamResponse req_param_resp{};
+private:
+  bool param_recieved;
+  rosserial_msgs::RequestParamResponse req_param_resp;
 
   bool requestParam(const char * name, int time_out =  1000)
   {
-    param_received = false;
+    param_recieved = false;
     rosserial_msgs::RequestParamRequest req;
     req.name  = (char*)name;
     publish(TopicInfo::ID_PARAMETER_REQUEST, &req);
     uint32_t end_time = hardware_.time() + time_out;
-    while (!param_received)
+    while (!param_recieved)
     {
       spinOnce();
       if (hardware_.time() > end_time)

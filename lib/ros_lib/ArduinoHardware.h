@@ -41,7 +41,7 @@
   #include <WProgram.h>  // Arduino 0022
 #endif
 
-#if defined(__MK20DX128__) || defined(__MK20DX256__) || defined(__MK64FX512__) || defined(__MK66FX1M0__) || defined(__MKL26Z64__) || defined(__IMXRT1062__)
+#if defined(__MK20DX128__) || defined(__MK20DX256__) || defined(__MK64FX512__) || defined(__MK66FX1M0__) || defined(__MKL26Z64__) || defined (__IMXRT1062__)
   #if defined(USE_TEENSY_HW_SERIAL)
     #define SERIAL_CLASS HardwareSerial // Teensy HW Serial
   #else
@@ -84,10 +84,6 @@ class ArduinoHardware {
       this->iostream = h.iostream;
       this->baud_ = h.baud_;
     }
-
-    void setPort(SERIAL_CLASS* io){
-      this->iostream = io;
-    }
   
     void setBaud(long baud){
       this->baud_= baud;
@@ -105,7 +101,8 @@ class ArduinoHardware {
 
     int read(){return iostream->read();};
     void write(uint8_t* data, int length){
-      iostream->write(data, length);
+      for(int i=0; i<length; i++)
+        iostream->write(data[i]);
     }
 
     unsigned long time(){return millis();}

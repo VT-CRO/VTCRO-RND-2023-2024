@@ -8,14 +8,18 @@
 #ifndef CHASSIS_H
 #define CHASSIS_H
 
-#include "MotorControl.h"
-#include "Observer.hpp"
-#include "ros.h"
-#include "geometry_msgs/Twist.h"
 #include "arduino_freertos.h"
 
+#include "ros.h"
+#include "geometry_msgs/Twist.h"
+#include "std_msgs/Int32MultiArray.h"
+
+#include "MotorControl.h"
+#include "Observer.hpp"
+#include "QDC_Encoder.h"
+
 #define NUM_MOTORS 4
-#define CONTROL_LOOP_PERIOD 50
+#define CONTROL_LOOP_PERIOD 500
 
 #define tskCHASSIS_PRIORITY 1
 
@@ -41,12 +45,19 @@ public:
   ~Chassis();
 
   bool initTask(ros::NodeHandle *nh);
+  void chassisTest();
+
+  ros::NodeHandle *_nh;
 
 private:
 
   // Motor control
   MotorControl motors;
-  int _wheel_speeds[NUM_MOTORS];
+  int32_t _wheel_speeds[NUM_MOTORS];
+  QDC_Encoder enc1;
+  QDC_Encoder enc2;
+  QDC_Encoder enc3;
+  QDC_Encoder enc4;
 
   // Line following
   Observer<int> line_follower;
@@ -55,9 +66,10 @@ private:
   double _chassis_length, _chassis_width;
 
   void subscriber_cb(const geometry_msgs::Twist &cmd_vel);
-  ros::NodeHandle *_nh;
   ros::Subscriber<geometry_msgs::Twist, Chassis> sub;
+  ros::Publisher pub;
   geometry_msgs::Twist _cmd_vel;
+  std_msgs::Int32MultiArray wheels;
 
   void meccanum_kinematics(geometry_msgs::Twist cmd_vel);
   static void chassisControl_task(void * pvParameters);
