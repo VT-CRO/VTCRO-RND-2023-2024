@@ -52,7 +52,7 @@ public:
 private:
 
   // Motor control
-  MotorControl motors;
+  // MotorControl motors;
   int32_t _wheel_speeds[NUM_MOTORS];
   QDC_Encoder enc1;
   QDC_Encoder enc2;
