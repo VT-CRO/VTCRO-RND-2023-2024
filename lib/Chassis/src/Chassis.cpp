@@ -12,10 +12,14 @@
 Chassis::Chassis()
     : sub("/cmd_vel", &Chassis::subscriber_cb, this),
       pub("/wheel_speeds", &wheels),
-      enc1(1, 1, 2, 3, 4, 30, 0),
-      enc2(1, 1, 2, 3, 4, 30, 0),
-      enc3(1, 1, 2, 3, 4, 30, 0),
-      enc4(1, 1, 2, 3, 4, 30, 0)
+      enc1(1, 1, 2, 1, 2, 1, 0),
+      enc2(2, 3, 4, 3, 4, 3, 0),
+      enc3(3, 30, 31, 30, 31, 30, 0),
+      enc4(4, 32, 33, 32, 33, 32, 0),
+      m1(5, 6),
+      m2(7, 8),
+      m3(37, 36),
+      m4(28, 29)
 {
     _chassis_length = 1;
     _chassis_width = 1;
@@ -123,6 +127,8 @@ void Chassis::chassisControl()
 
 void Chassis::chassisTest()
 {   
+    m1.Motor_start(100);
+
     while (1) 
     {
         uint16_t enc1_pos = enc1.getPosition();

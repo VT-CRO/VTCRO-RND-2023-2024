@@ -69,9 +69,9 @@ void QDC_mapDigitalPins(QDC_t *qdc, uint8_t phaseA, uint8_t phaseB, uint8_t inde
 
     xbara_pin_map(qdc, phaseA, PHASEA, pin_pus);
     xbara_pin_map(qdc, phaseB, PHASEB, pin_pus);
-    xbara_pin_map(qdc, index, INDEX, pin_pus);
-    xbara_pin_map(qdc, home, HOME, pin_pus);
-    xbara_pin_map(qdc, trigger, TRIGGER, pin_pus);
+    // xbara_pin_map(qdc, index, INDEX, pin_pus);
+    // xbara_pin_map(qdc, home, HOME, pin_pus);
+    // xbara_pin_map(qdc, trigger, TRIGGER, pin_pus);
 }
 
 void QDC_enableInterrupts(QDC_t *qdc)
