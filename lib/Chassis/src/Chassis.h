@@ -45,7 +45,7 @@ public:
 private:
 
   // Motor control
-  MotorControl motors;
+  //MotorControl motors();
   int _wheel_speeds[NUM_MOTORS];
 
   // Line following

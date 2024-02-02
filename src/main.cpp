@@ -1,5 +1,4 @@
 #include "arduino_freertos.h"
-#include <micro_ros_platformio.h>
 #include <ros.h>
 #include <geometry_msgs/Twist.h>
 

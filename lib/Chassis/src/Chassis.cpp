@@ -22,7 +22,7 @@ Chassis::Chassis()
 
         // initialize motor pid timers and set callback function
         
-        motors.pid_task(this);
+        //motors.pid_task(this);
     }
 
     // TODO: QRT_Sensor.attachObserver(line_follower)

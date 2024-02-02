@@ -1,4 +1,5 @@
 #include <stdint.h>
+#include <arduino_freertos.h>
 
 typedef struct
 {
