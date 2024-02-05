@@ -24,32 +24,24 @@ Chassis::Chassis()
     _chassis_length = 1;
     _chassis_width = 1;
 
-    for(int i = 0; i < NUM_MOTORS; ++i)
-    {
-        // TODO:
-        //  - set motor in PID mode
-        //  - set motor other parameters
-        //  - set motor PID parameters
-        //  - set motors to listen to encoders
-
-        // initialize motor pid timers and set callback function
-        // TODO: replace timer-based pid with tasks
-        // motors.vInitMotorPIDTimer();
-    }   
+    m1.Motor_pin_init();
+    m2.Motor_pin_init();
+    m3.Motor_pin_init();
+    m4.Motor_pin_init();
 
     // TODO: QRT_Sensor.attachObserver(line_follower)
 
-    enc1.init();
-    enc2.init();
-    enc3.init();
-    enc4.init();
+    // enc1.init();
+    // enc2.init();
+    // enc3.init();
+    // enc4.init();
 }
 
 bool Chassis::initTask(ros::NodeHandle *nh)
 {
     _nh = nh;
     _nh->subscribe(sub);
-    _nh->advertise(pub);
+    // _nh->advertise(pub);
 
     // initialize motor tasks
     // Serial.println("Chassis initializing task");
@@ -119,10 +111,15 @@ void Chassis::chassisControl()
 
     // _nh->loginfo("Set wheel speeds");
 
-    // TODO: Change motors.Motor_setSpeed(_wheel_speeds[0], _wheel_speeds[1], _wheel_speeds[2], _wheel_speeds[3]);
-    //assume encoders are going to have a function called setspeed;
+    m1.Motor_start(_wheel_speeds[0]);
+    m2.Motor_start(_wheel_speeds[1]);
+    m3.Motor_start(_wheel_speeds[2]);
+    m4.Motor_start(_wheel_speeds[3]);
     
     // Motor PID control loop handled in a separate RTOS thread
+    // for (int i = 0; i < NUM_MOTORS; ++i) {
+        
+    // }
 }
 
 void Chassis::chassisTest()

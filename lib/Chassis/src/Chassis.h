@@ -70,7 +70,7 @@ private:
 
   void subscriber_cb(const geometry_msgs::Twist &cmd_vel);
   ros::Subscriber<geometry_msgs::Twist, Chassis> sub;
-  ros::Publisher pub;
+  // ros::Publisher pub;
   geometry_msgs::Twist _cmd_vel;
   std_msgs::Int32MultiArray wheels;
 

@@ -9,7 +9,6 @@ ros::NodeHandle nh;
 
 FLASHMEM __attribute__((noinline)) void setup()
 {
-
   pinMode(arduino::LED_BUILTIN, arduino::OUTPUT);
   digitalWriteFast(arduino::LED_BUILTIN, arduino::HIGH);
 
@@ -17,10 +16,7 @@ FLASHMEM __attribute__((noinline)) void setup()
 
   chassis.chassisTest();
 
-  // Serial.begin();
-
-  /*
-  // Serial.begin(9600);
+  Serial.begin(9600);
 
   nh.initNode();
 
@@ -44,7 +40,6 @@ FLASHMEM __attribute__((noinline)) void setup()
     // error
     while(1);
   }
-  */
 
   vTaskStartScheduler();
 
