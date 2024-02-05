@@ -3,6 +3,8 @@
 
 #include "arduino_freertos.h"
 
+static TaskHandle_t *task_ptr;
+
 void flashLED_task(void *parameters)
 {
 
@@ -22,12 +24,23 @@ void flashLED_task(void *parameters)
 
 bool flashLED_init()
 {
-    if (xTaskCreate(flashLED_task, "Blinking LED Task", 100, NULL, tskIDLE_PRIORITY + 1, NULL) != pdTRUE)
+    if (xTaskCreate(flashLED_task, "Blinking LED Task", 100, NULL, tskIDLE_PRIORITY + 1, task_ptr) != pdTRUE)
     {
         digitalWriteFast(arduino::LED_BUILTIN, arduino::HIGH);
         return 1;
     }
     return 0;
+}
+
+void stopBlink()
+{
+    digitalWriteFast(arduino::LED_BUILTIN, arduino::HIGH);
+    vTaskSuspend(*task_ptr);
+}
+
+void startBlink()
+{
+    vTaskResume(*task_ptr);
 }
 
 #endif

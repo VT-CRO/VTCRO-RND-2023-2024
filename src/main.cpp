@@ -20,6 +20,7 @@ FLASHMEM __attribute__((noinline)) void setup()
     {
     };
   }
+
   // nh.initNode();
 
   // Serial.println("Initializing spin task");
@@ -58,5 +59,4 @@ FLASHMEM __attribute__((noinline)) void setup()
 
 void loop()
 {
-  delay(100);
 }
