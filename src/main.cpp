@@ -7,12 +7,17 @@
 
 ros::NodeHandle nh;
 
-FLASHMEM __attribute__((noinline))
-void setup() {
+FLASHMEM __attribute__((noinline)) void setup()
+{
+
+  pinMode(arduino::LED_BUILTIN, arduino::OUTPUT);
+  digitalWriteFast(arduino::LED_BUILTIN, arduino::HIGH);
 
   Chassis chassis;
 
   chassis.chassisTest();
+
+  // Serial.begin();
 
   /*
   // Serial.begin(9600);
@@ -41,11 +46,9 @@ void setup() {
   }
   */
 
-  
-
   vTaskStartScheduler();
 
-  while(1)
+  while (1)
   {
     // Serial.println("Scheduler Failed! \n");
     nh.logfatal("Scheduler Failed!");
@@ -54,6 +57,7 @@ void setup() {
   }
 }
 
-void loop() {
+void loop()
+{
   delay(100);
 }
