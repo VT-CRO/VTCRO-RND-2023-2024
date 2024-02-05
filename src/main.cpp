@@ -4,7 +4,7 @@
 
 #include <spin_task.h>
 #include <Chassis.h>
-
+#include <ledBlink.h>
 ros::NodeHandle nh;
 
 FLASHMEM __attribute__((noinline)) void setup()
@@ -12,34 +12,38 @@ FLASHMEM __attribute__((noinline)) void setup()
   pinMode(arduino::LED_BUILTIN, arduino::OUTPUT);
   digitalWriteFast(arduino::LED_BUILTIN, arduino::HIGH);
 
-  Chassis chassis;
-
-  chassis.chassisTest();
-
   Serial.begin(9600);
 
-  nh.initNode();
+  if (flashLED_init())
+  {
+    while (1)
+    {
+    };
+  }
+  // nh.initNode();
 
   // Serial.println("Initializing spin task");
-  nh.logdebug("Initializing spin task");
+  // nh.logdebug("Initializing spin task");
 
-  delay(10000);
+  // delay(10000);
 
-  if (spinInitTask(&nh))
-  {
-    // error2
-    while(1);
-  }
+  // if (spinInitTask(&nh))
+  // {
+  //   // error2
+  //   while (1)
+  //     ;
+  // }
 
-  // subscriber test
+  // // subscriber test
 
-  Chassis chassis;
+  // Chassis chassis;
 
-  if (chassis.initTask(&nh))
-  {
-    // error
-    while(1);
-  }
+  // if (chassis.initTask(&nh))
+  // {
+  //   // error
+  //   while (1)
+  //     ;
+  // }
 
   vTaskStartScheduler();
 

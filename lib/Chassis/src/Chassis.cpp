@@ -6,12 +6,12 @@
 // Last Modified: 1/24/2024
 // Description:  This file contains class declarations for
 //               a mecannum chassis object
-///////////////////////////////////////////////////////////// 
+/////////////////////////////////////////////////////////////
 #include "Chassis.h"
 
 Chassis::Chassis()
     : sub("/cmd_vel", &Chassis::subscriber_cb, this),
-      pub("/wheel_speeds", &wheels),
+      // pub("/wheel_speeds", &wheels),
       enc1(1, 1, 2, 1, 2, 1, 0),
       enc2(2, 3, 4, 3, 4, 3, 0),
       enc3(3, 30, 31, 30, 31, 30, 0),
@@ -86,13 +86,14 @@ void Chassis::meccanum_kinematics(geometry_msgs::Twist cmd_vel)
 }
 
 // use as ros subscriber callback function
-void Chassis::chassisControl_task(void * pvParameters)
+void Chassis::chassisControl_task(void *pvParameters)
 {
-    Chassis* instance = (Chassis *)pvParameters;
+    Chassis *instance = (Chassis *)pvParameters;
 
     TickType_t ui32WakeTime = xTaskGetTickCount();
 
-    while (1) {
+    while (1)
+    {
         instance->chassisControl();
 
         xTaskDelayUntil(&ui32WakeTime, pdMS_TO_TICKS(CONTROL_LOOP_PERIOD));
@@ -115,18 +116,18 @@ void Chassis::chassisControl()
     m2.Motor_start(_wheel_speeds[1]);
     m3.Motor_start(_wheel_speeds[2]);
     m4.Motor_start(_wheel_speeds[3]);
-    
+
     // Motor PID control loop handled in a separate RTOS thread
     // for (int i = 0; i < NUM_MOTORS; ++i) {
-        
+
     // }
 }
 
 void Chassis::chassisTest()
-{   
+{
     m1.Motor_start(100);
 
-    while (1) 
+    while (1)
     {
         uint16_t enc1_pos = enc1.getPosition();
         uint16_t enc2_pos = enc2.getPosition();
