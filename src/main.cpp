@@ -9,6 +9,24 @@ ros::NodeHandle nh;
 
 FLASHMEM __attribute__((noinline)) void setup()
 {
+  std::vector<MotorControl> motors; 
+  motors.push_back(MotorControl(7, 6)); // FL
+  motors.push_back(MotorControl(2, 3)); // FR
+  motors.push_back(MotorControl(4, 5)); // BR
+  motors.push_back(MotorControl(9, 8)); // BL
+
+  // we'd also need to create encoders here and set Motors to listen to encoder count
+  // QDC_Encoder enc1;
+  // QDC_Encoder enc2;
+  // QDC_Encoder enc3;
+  // QDC_Encoder enc4;
+  // enc1(1, 1, 2, 1, 2, 1, 0),
+  // enc2(2, 3, 4, 3, 4, 3, 0),
+  // enc3(3, 30, 31, 30, 31, 30, 0),
+  // enc4(4, 32, 33, 32, 33, 32, 0),
+
+  Chassis chassis(motors);
+
   pinMode(arduino::LED_BUILTIN, arduino::OUTPUT);
   digitalWriteFast(arduino::LED_BUILTIN, arduino::HIGH);
 
@@ -16,10 +34,11 @@ FLASHMEM __attribute__((noinline)) void setup()
 
   if (flashLED_init())
   {
-    while (1)
-    {
-    };
+    while (1);
   }
+
+  chassis.hahaRoutine();
+  // chassis.cmdVelTest();
 
   // nh.initNode();
 
@@ -35,18 +54,13 @@ FLASHMEM __attribute__((noinline)) void setup()
   //     ;
   // }
 
-  // // subscriber test
-
-  // Chassis chassis;
-
-  // if (chassis.initTask(&nh))
+  // if (chassis.initTask())
   // {
   //   // error
-  //   while (1)
-  //     ;
+  //   while (1);
   // }
 
-  vTaskStartScheduler();
+  // vTaskStartScheduler();
 
   while (1)
   {

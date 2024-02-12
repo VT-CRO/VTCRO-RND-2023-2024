@@ -29,10 +29,8 @@ MotorControl::MotorControl(int in1, int in2)
     speed = 0;
     current_velocity = 0; // need to talk about this with jason
     goal_velocity = 0;    // need to talk about this with jason
+    pidMode = false;
     Motor_pin_init();
-
-    (xTaskCreate(MotorControl::pid_task, "PID control task", 100, this, tskIDLE_PRIORITY + tskPID_PRIORITY, NULL) != pdTRUE);
-    // ask jason about the true and false in the chasis
 }
 
 void MotorControl::Motor_setPIDParams(float P, float I, float D)
@@ -42,22 +40,35 @@ void MotorControl::Motor_setPIDParams(float P, float I, float D)
     motorD = D;
 }
 
+void MotorControl::Motor_enablePIDTask()
+{
+    (xTaskCreate(MotorControl::pid_task, "PID control task", 100, this, tskIDLE_PRIORITY + tskPID_PRIORITY, NULL) != pdTRUE);
+    pidMode = false;
+}
+
 // Motor Speed sets the speed of the motors.
 // Values go from 0 - 255 for analogWrite.
 //  I want to support negative values later
 //  to signify reverse.
 void MotorControl::Motor_start(int newSpeed)
 {
-    checkDirection(newSpeed);
-    digitalWrite(no_go_pin, arduino::LOW);
-    double increment = .01;
-    while (increment < 1)
+    if (!pidMode)
     {
-        analogWrite(go_pin, increment * speed);
-        delay(1);
-        increment = increment + .01;
-        Serial.print(increment);
+        // double increment = .01;
+        // while (increment < 1)
+        // {
+        //     analogWrite(go_pin, increment * speed);
+        //     delay(1);
+        //     increment = increment + .01;
+        //     Serial.print(increment);
+        // }
+        checkDirection(newSpeed);
+        digitalWrite(no_go_pin, arduino::LOW);
+        analogWrite(go_pin, speed);
+    } else {
+        // write motor speed
     }
+
 }
 
 // Motor_pin_init initalizates pins.

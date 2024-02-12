@@ -32,6 +32,9 @@ class MotorControl{
     //Sets the PID Params
     void Motor_setPIDParams(float P, float I, float D);
 
+    // Enable speed PID control
+    void Motor_enablePIDTask();
+
     //Starts the motors and changes speed
     void Motor_start(int newSpeed);
 
@@ -53,6 +56,8 @@ class MotorControl{
 
     //changes the go and no_go pins depending on whether the speed is positive or negative 
     void checkDirection(int speed);
+
+    bool pidMode;
 
     int speed;
 

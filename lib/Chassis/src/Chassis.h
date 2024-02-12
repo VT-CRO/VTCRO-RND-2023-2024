@@ -37,34 +37,37 @@
  */ 
 class Chassis {
 public:
-  Chassis();
+  Chassis(std::vector<MotorControl> motors);
   Chassis(Chassis &&) = default;
   Chassis(const Chassis &) = default;
   Chassis &operator=(Chassis &&) = default;
   Chassis &operator=(const Chassis &) = default;
   ~Chassis();
 
-  bool initTask(ros::NodeHandle *nh);
-  void chassisTest();
+  bool initTask();
+  void initNode(ros::NodeHandle *nh);
+  void motorTest();
+  void cmdVelTest();
+  void hahaRoutine();
+
+  void forward(float);
+  void back(float);
+  void strafeLeft(float);
+  void strafeRight(float);
+  void turnLeft(float);
+  void turnRight(float);
+  void stop();
 
   ros::NodeHandle *_nh;
 
 private:
 
-  MotorControl m1;
-  MotorControl m2;
-  MotorControl m3;
-  MotorControl m4;
-  // MotorControl motors;
+  std::vector<MotorControl> _motors;
   int32_t _wheel_speeds[NUM_MOTORS];
-  QDC_Encoder enc1;
-  QDC_Encoder enc2;
-  QDC_Encoder enc3;
-  QDC_Encoder enc4;
 
   // Line following
   Observer<int> line_follower;
-  int _line_following_gain;
+  int _line_following_gain = 0;
 
   double _chassis_length, _chassis_width;
 
