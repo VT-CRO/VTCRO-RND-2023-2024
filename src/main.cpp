@@ -5,15 +5,18 @@
 #include <spin_task.h>
 #include <Chassis.h>
 #include <ledBlink.h>
+
+#include <HardwareDefs.h>
+
 ros::NodeHandle nh;
 
 FLASHMEM __attribute__((noinline)) void setup()
 {
-  std::vector<MotorControl> motors; 
-  motors.push_back(MotorControl(7, 6)); // FL
-  motors.push_back(MotorControl(2, 3)); // FR
-  motors.push_back(MotorControl(4, 5)); // BR
-  motors.push_back(MotorControl(9, 8)); // BL
+  std::vector<MotorControl> motors;
+  motors.push_back(MotorControl(MOTOR_FL_IN1, MOTOR_FL_IN2)); // FL
+  motors.push_back(MotorControl(MOTOR_FR_IN1, MOTOR_FR_IN2)); // FR
+  motors.push_back(MotorControl(MOTOR_BR_IN1, MOTOR_BR_IN2)); // BR
+  motors.push_back(MotorControl(MOTOR_BL_IN1, MOTOR_BL_IN2)); // BL
 
   // we'd also need to create encoders here and set Motors to listen to encoder count
   // QDC_Encoder enc1;
@@ -34,7 +37,8 @@ FLASHMEM __attribute__((noinline)) void setup()
 
   if (flashLED_init())
   {
-    while (1);
+    while (1)
+      ;
   }
 
   chassis.hahaRoutine();
