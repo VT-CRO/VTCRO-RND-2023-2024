@@ -13,6 +13,7 @@
 #include "ros.h"
 #include "geometry_msgs/Twist.h"
 #include "arduino_freertos.h"
+#include "QTR_8.h"
 
 #define NUM_MOTORS 4
 #define CONTROL_LOOP_PERIOD 50
@@ -49,7 +50,7 @@ private:
   int _wheel_speeds[NUM_MOTORS];
 
   // Line following
-  Observer<int> line_follower;
+  QTR_8 qtr;
   int _line_following_gain;
 
   double _chassis_length, _chassis_width;

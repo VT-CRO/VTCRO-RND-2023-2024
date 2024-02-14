@@ -4,6 +4,8 @@
 
 #include <spin_task.h>
 #include <Chassis.h>
+#include "QTR_8.h"
+#include "QTR_8.cpp"
 
 void subscriber_cb(const geometry_msgs::Twist& msg)
 {
@@ -15,7 +17,8 @@ ros::Subscriber<geometry_msgs::Twist> sub("/cmd_vel", &subscriber_cb);
 
 FLASHMEM __attribute__((noinline))
 void setup() {
-
+  Serial.println("Starting! \n");
+ /*
   nh.initNode();
   nh.subscribe(sub);
 
@@ -34,7 +37,10 @@ void setup() {
   //   // error
   //   while(1);
   // }
+*/
 
+  QTR_8 qtr(4);
+  qtr.initTask();
   vTaskStartScheduler();
 
   while(1)

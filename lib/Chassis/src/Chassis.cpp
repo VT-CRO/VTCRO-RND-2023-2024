@@ -10,7 +10,7 @@
 #include "Chassis.h"
 
 Chassis::Chassis()
-    : sub("/cmd_vel", &Chassis::subscriber_cb, this)
+    : sub("/cmd_vel", &Chassis::subscriber_cb, this), qtr(4)
 {
     for(int i = 0; i < NUM_MOTORS; ++i)
     {
@@ -30,10 +30,15 @@ Chassis::Chassis()
 
 bool Chassis::initTask(ros::NodeHandle *nh)
 {
+    /*
     _nh = nh;
     _nh->subscribe(sub);
+    */
 
     // initialize motor tasks
+
+    //call constructor for QTR_8
+
 
     if (xTaskCreate(Chassis::chassisControl_task, "chassis control task", 100, this, tskIDLE_PRIORITY + tskCHASSIS_PRIORITY, NULL) != pdTRUE)
         return 1;
@@ -76,7 +81,7 @@ void Chassis::chassisControl_task(void * pvParameters)
 void Chassis::chassisControl()
 {
     // to compensate for off-centeredness, we add chassis velocity in the y direction
-    _cmd_vel.linear.y -= _line_following_gain * line_follower.getState();
+    _cmd_vel.linear.y -= _line_following_gain /* * line_follower.getState() TODO: replace this*/;
 
     meccanum_kinematics(_cmd_vel);
 
