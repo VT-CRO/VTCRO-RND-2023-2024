@@ -44,3 +44,15 @@ void startBlink()
 }
 
 #endif
+
+void errorBlink()
+{
+    bool on = false;
+    while (1) {
+        if (on)
+            digitalWriteFast(arduino::LED_BUILTIN, arduino::HIGH);
+        else 
+            digitalWriteFast(arduino::LED_BUILTIN, arduino::LOW);
+        on = !on;
+    }
+}

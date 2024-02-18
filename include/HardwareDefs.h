@@ -27,6 +27,15 @@
 #define QTR_14 40
 #define QTR_15 41
 
+#define QDC1_A 1
+#define QDC1_B 2
+#define QDC2_A 3
+#define QDC2_B 4
+#define QDC3_A 30
+#define QDC4_B 31
+#define QDC5_A 32
+#define QDC6_B 33
+
 #define LENGTH 11 // inches
 #define WIDTH 11  // inches
 

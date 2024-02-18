@@ -20,8 +20,12 @@ static void spinTask(void *pvParameters)
 
     while (1)
     {
+        taskENTER_CRITICAL();
+
         nh_->loginfo("Spinning...");
         nh_->spinOnce();
+        
+        taskEXIT_CRITICAL();
 
         xTaskDelayUntil(&ui32WakeTime, pdMS_TO_TICKS(ROS_SPIN_PERIOD));
     }
