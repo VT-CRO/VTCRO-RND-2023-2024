@@ -52,6 +52,8 @@ class MotorControl{
 
     void Motor_stopMove();
 
+    int getSpeed();
+
     private:
 
     //changes the go and no_go pins depending on whether the speed is positive or negative 

@@ -52,23 +52,17 @@ void MotorControl::Motor_enablePIDTask()
 //  to signify reverse.
 void MotorControl::Motor_start(int newSpeed)
 {
-    if (!pidMode)
-    {
-        // double increment = .01;
-        // while (increment < 1)
-        // {
-        //     analogWrite(go_pin, increment * speed);
-        //     delay(1);
-        //     increment = increment + .01;
-        //     Serial.print(increment);
-        // }
-        checkDirection(newSpeed);
-        digitalWrite(no_go_pin, arduino::LOW);
-        analogWrite(go_pin, speed);
-    } else {
-        // write motor speed
-    }
-
+    // double increment = .01;
+    // while (increment < 1)
+    // {
+    //     analogWrite(go_pin, increment * speed);
+    //     delay(1);
+    //     increment = increment + .01;
+    //     Serial.print(increment);
+    // }
+    checkDirection(newSpeed);
+    digitalWrite(no_go_pin, arduino::LOW);
+    analogWrite(go_pin, speed);
 }
 
 // Motor_pin_init initalizates pins.
@@ -151,4 +145,9 @@ void MotorControl::checkDirection(int newSpeed)
         no_go_pin = Assignments.in2;
         speed = newSpeed;
     }
+
+}
+
+int MotorControl::getSpeed(){
+    return go_pin;
 }
