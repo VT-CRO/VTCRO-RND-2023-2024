@@ -42,7 +42,7 @@ class MotorControl{
 
     //sets the motor direction
     //Might not need this
-    void Motor_setDirection(int direction, int delay);
+    // void Motor_setDirection(int direction, int delay);
 
     //task for freeRTOS
     static void pid_task(void * pidParams);
@@ -50,14 +50,14 @@ class MotorControl{
     //pid loop
     void Motor_pidControlLoop();
 
-    void Motor_stopMove();
+    // void Motor_stopMove();
 
     int getSpeed();
 
     private:
 
     //changes the go and no_go pins depending on whether the speed is positive or negative 
-    void checkDirection(int speed);
+    // void checkDirection(int speed);
 
     bool pidMode;
 
@@ -67,9 +67,6 @@ class MotorControl{
     int goal_velocity;
 
     int last_error;
-
-    int go_pin;
-    int no_go_pin;
 
     struct _PinAssign {
         int in1;
