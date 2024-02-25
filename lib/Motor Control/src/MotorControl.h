@@ -1,15 +1,9 @@
 /////////////////////////////////////////////////////////////
 // Author: Domenic Marcelli  R&D Team VT CRO
 // filename: MotorControl.h
-// Last Modified: 10/27/2023
+// Last Modified: 02/25/2024
 // Description:  This the header file for the motor controls.
 /////////////////////////////////////////////////////////////
-
-// Notes: Here is a sensor I found that using the pins https://github.com/roggenkamps/teensy-thermoled/blob/master/tempsens.c
-//  we have four motors
-
-// After discussion with Jason, make this general and one motor at a time
-// so get rid of multiple pins and make it only one
 
 #ifndef MOTORCONTROL_H_
 #define MOTORCONTROL_H_
