@@ -1,3 +1,6 @@
+#ifndef HARDWAREDEFS_H
+#define HARDWAREDEFS_H
+
 #define MOTOR_FL_IN1 7
 #define MOTOR_FL_IN2 6
 
@@ -31,3 +34,5 @@
 #define WIDTH 11  // inches
 
 #define WHEEL_RADIUS 1 // inches
+
+#endif

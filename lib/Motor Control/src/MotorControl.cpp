@@ -70,9 +70,16 @@ void MotorControl::Motor_start(int newSpeed)
         go_pin = Assignments.in1;
         no_go_pin = Assignments.in2;
     }
-    digitalWrite(no_go_pin, arduino::LOW);
-    analogWrite(go_pin, speed);
     speed = abs(newSpeed);
+    analogWrite(no_go_pin, 0);
+    analogWrite(go_pin, speed);
+}
+
+void MotorControl::logState(ros::NodeHandle &nh)
+{
+    char buff[32];
+    sprintf(buff, "Motor Speed: %d", speed);
+    nh.loginfo(buff);
 }
 
 // Motor_pin_init initalizates pins.

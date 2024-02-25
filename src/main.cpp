@@ -9,6 +9,8 @@
 
 #include <HardwareDefs.h>
 
+#include <Servo.h>
+
 ros::NodeHandle nh;
 Chassis chassis;
 
@@ -24,37 +26,51 @@ void sub_cb(const geometry_msgs::Twist& msg)
 
 ros::Subscriber<geometry_msgs::Twist> sub("/cmd_vel", &sub_cb);
 
+Servo servo;
+
 FLASHMEM __attribute__((noinline)) void setup()
 {
+
+  servo.attach(6);
   // std::vector<MotorControl> motors;
   // motors.push_back(); // FL
   // motors.push_back(); // FR
   // motors.push_back(); // BR
   // motors.push_back(); // BL
 
-  pinMode(arduino::LED_BUILTIN, arduino::OUTPUT);
-  digitalWriteFast(arduino::LED_BUILTIN, arduino::HIGH);
+  // pinMode(arduino::LED_BUILTIN, arduino::OUTPUT);
+  // digitalWriteFast(arduino::LED_BUILTIN, arduino::HIGH);
 
-  nh.getHardware()->setBaud(115200);
-  nh.initNode();
-  nh.subscribe(sub);
+  // nh.getHardware()->setBaud(115200);
+  // nh.initNode();
+  // nh.subscribe(sub);
 }
 
 void loop()
 {
-  double* speds = chassis.getWheelSpeeds();
+  // double* speds = chassis.getWheelSpeeds();
 
-  char buff[50];
-  sprintf(buff, "%d %d %d %d", (int)speds[0], (int)speds[1], (int)speds[2], (int)speds[3]);
-  //sprintf(buff, "%d %d %d %d", m1.getSpeed(), m2.getSpeed(), m3.getSpeed(), m4.getSpeed());
+  // char buff[50];
+  // sprintf(buff, "%d %d %d %d", (int)speds[0], (int)speds[1], (int)speds[2], (int)speds[3]);
+  // nh.loginfo(buff);
+  // // sprintf(buff, "%d %d %d %d", m1.getSpeed(), m2.getSpeed(), m3.getSpeed(), m4.getSpeed());
 
-  nh.loginfo(buff);
-  m1.Motor_start((int)speds[0]);
-  m2.Motor_start((int)speds[1]);
-  m3.Motor_start((int)speds[2]);
-  m4.Motor_start((int)speds[3]);
+  // m1.Motor_start((int)speds[0]);
+  // // m1.logState(nh);
+  // m2.Motor_start((int)speds[1]);
+  // m3.Motor_start((int)speds[2]);
+  // m4.Motor_start((int)speds[3]);
 
-  nh.spinOnce();
+  // nh.spinOnce();
   
-  delay(500);
+  // delay(100);
+
+  servo.write(110); // 75 for full forward, 120 for reverse
+  delay(3000);
+  servo.write(0);
+  delay(1000);
+  servo.write(75);
+  delay(3000);
+  servo.write(0);
+  delay(5000);
 }

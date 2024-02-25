@@ -8,6 +8,7 @@
 //               a mecannum chassis object
 /////////////////////////////////////////////////////////////
 #include "Chassis.hpp"
+#include <HardwareDefs.h>
 
 Chassis::Chassis() {};
 
@@ -19,10 +20,12 @@ void Chassis::meccanum_kinematics(geometry_msgs::Twist cmd_vel)
     float y = cmd_vel.linear.y;
     float w = cmd_vel.angular.z;
 
-    _wheel_speeds[0] = (-1 * (_chassis_length + _chassis_width) * w) + x - y;
-    _wheel_speeds[1] = ((_chassis_length + _chassis_width) * w) + x + y;
-    _wheel_speeds[2] = ((_chassis_length + _chassis_width) * w) + x - y;
-    _wheel_speeds[3] = (-1 * (_chassis_length + _chassis_width) * w) + x + y;
+    float lw = LENGTH + WIDTH;
+
+    _wheel_speeds[0] = x - y - (w * lw);
+    _wheel_speeds[1] = x + y + (w * lw);
+    _wheel_speeds[2] = x - y + (w * lw);
+    _wheel_speeds[3] = x + y - (w * lw);
 
     for (int i = 0; i < 4; ++i)
     {

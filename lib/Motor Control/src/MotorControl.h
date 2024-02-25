@@ -18,6 +18,7 @@
 #include <avr/io.h>
 #include <avr/pgmspace.h>
 #include "arduino_freertos.h"
+#include "ros.h"
 
 #define tskPID_PRIORITY 7  //can be changed. Up for discussion
 
@@ -53,6 +54,8 @@ class MotorControl{
     // void Motor_stopMove();
 
     int getSpeed();
+
+    void logState(ros::NodeHandle &nh);
 
     private:
 
