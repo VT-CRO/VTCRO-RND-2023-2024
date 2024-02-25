@@ -59,7 +59,7 @@ void MotorControl::Motor_start(int newSpeed)
     //     Serial.print(increment);
     // }
     int go_pin, no_go_pin;
-    
+
     if (newSpeed < 0)
     {
         go_pin = Assignments.in2;
@@ -86,8 +86,8 @@ void MotorControl::logState(ros::NodeHandle &nh)
 //  honestly, we might want the constuctor to handle this
 void MotorControl::Motor_pin_init()
 {
-    pinMode(Assignments.in1, arduino::OUTPUT);
-    pinMode(Assignments.in2, arduino::OUTPUT);
+    pinMode(Assignments.in1, OUTPUT);
+    pinMode(Assignments.in2, OUTPUT);
 }
 
 void MotorControl::pid_task(void *pidParams)
@@ -148,9 +148,10 @@ void MotorControl::Motor_pidControlLoop()
 
 // void MotorControl::checkDirection(int newSpeed)
 // {
-    
+
 // }
 
-int MotorControl::getSpeed(){
+int MotorControl::getSpeed()
+{
     return speed;
 }

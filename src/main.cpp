@@ -1,4 +1,6 @@
-#include "arduino_freertos.h"
+#include "Arduino_FreeRTOS.h"
+#include "Arduino.h"
+
 #include <ros.h>
 #include <geometry_msgs/Twist.h>
 
@@ -9,7 +11,7 @@
 
 #include "HardwareDefs.h"
 
-#include <Servo.h>
+// #include <Servo.h>
 
 ros::NodeHandle nh;
 Chassis chassis;
@@ -19,16 +21,17 @@ MotorControl m2(MOTOR_FR_IN1, MOTOR_FR_IN2);
 MotorControl m3(MOTOR_BR_IN1, MOTOR_BR_IN2);
 MotorControl m4(MOTOR_BL_IN1, MOTOR_BL_IN2);
 
-void sub_cb(const geometry_msgs::Twist& msg)
+void sub_cb(const geometry_msgs::Twist &msg)
 {
   chassis.meccanum_kinematics(msg);
 }
 
 ros::Subscriber<geometry_msgs::Twist> sub("/cmd_vel", &sub_cb);
 
-Servo servo;
+// Servo servo;
 
-FLASHMEM __attribute__((noinline)) void setup()
+// FLASHMEM __attribute__((noinline))
+void setup()
 {
   // servo.attach(6);
   // std::vector<MotorControl> motors;
@@ -37,8 +40,9 @@ FLASHMEM __attribute__((noinline)) void setup()
   // motors.push_back(); // BR
   // motors.push_back(); // BL
 
-  pinMode(arduino::LED_BUILTIN, arduino::OUTPUT);
-  digitalWriteFast(arduino::LED_BUILTIN, arduino::HIGH);
+  // the ardiuno commands don't work now with the version of the freeRTOS lib I switched to
+  pinMode(LED_BUILTIN, OUTPUT);
+  digitalWrite(LED_BUILTIN, HIGH);
 
   nh.getHardware()->setBaud(115200);
   nh.initNode();
@@ -47,7 +51,7 @@ FLASHMEM __attribute__((noinline)) void setup()
 
 void loop()
 {
-  double* speds = chassis.getWheelSpeeds();
+  double *speds = chassis.getWheelSpeeds();
 
   char buff[50];
   sprintf(buff, "%d %d %d %d", (int)speds[0], (int)speds[1], (int)speds[2], (int)speds[3]);
@@ -61,7 +65,7 @@ void loop()
   m4.Motor_start((int)speds[3]);
 
   nh.spinOnce();
-  
+
   delay(100);
 
   // servo.write(110); // 75 for full forward, 120 for reverse
