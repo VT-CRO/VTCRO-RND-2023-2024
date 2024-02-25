@@ -24,8 +24,6 @@ MotorControl::MotorControl(int in1, int in2)
 
     Assignments.in1 = in1;
     Assignments.in2 = in2;
-    go_pin = in1;
-    no_go_pin = in2;
     speed = 0;
     current_velocity = 0; // need to talk about this with jason
     goal_velocity = 0;    // need to talk about this with jason
@@ -52,23 +50,36 @@ void MotorControl::Motor_enablePIDTask()
 //  to signify reverse.
 void MotorControl::Motor_start(int newSpeed)
 {
-    if (!pidMode)
+    // double increment = .01;
+    // while (increment < 1)
+    // {
+    //     analogWrite(go_pin, increment * speed);
+    //     delay(1);
+    //     increment = increment + .01;
+    //     Serial.print(increment);
+    // }
+    int go_pin, no_go_pin;
+    
+    if (newSpeed < 0)
     {
-        // double increment = .01;
-        // while (increment < 1)
-        // {
-        //     analogWrite(go_pin, increment * speed);
-        //     delay(1);
-        //     increment = increment + .01;
-        //     Serial.print(increment);
-        // }
-        checkDirection(newSpeed);
-        digitalWrite(no_go_pin, arduino::LOW);
-        analogWrite(go_pin, speed);
-    } else {
-        // write motor speed
+        go_pin = Assignments.in2;
+        no_go_pin = Assignments.in1;
     }
+    else
+    {
+        go_pin = Assignments.in1;
+        no_go_pin = Assignments.in2;
+    }
+    speed = abs(newSpeed);
+    analogWrite(no_go_pin, 0);
+    analogWrite(go_pin, speed);
+}
 
+void MotorControl::logState(ros::NodeHandle &nh)
+{
+    char buff[32];
+    sprintf(buff, "Motor Speed: %d", speed);
+    nh.loginfo(buff);
 }
 
 // Motor_pin_init initalizates pins.
@@ -103,9 +114,7 @@ void MotorControl::Motor_pidControlLoop()
     last_error = error_velocity;
     // need to be able to set velocity for next interation of the loop
     // right now the only thing we have is set speed which ranges from 0-256 bytes
-    // figure out how that works. Probably need to deal with the encoder somewhere else in the code
-    // Need more clarification
-
+    // figure out how that works. Probably need to deal with the encoder somewhere else in the codeDo
     float controlSig = PG + DG;
 
     // set speed with value control Sig and convert bounds
@@ -123,32 +132,25 @@ void MotorControl::Motor_pidControlLoop()
     Motor_start(speed);
 }
 
-void MotorControl::Motor_stopMove()
-{
-    double increment = 0.01;
-    while (increment > 0)
-    {
-        // alternatively I could just put the set speed function here
-        // but then I would need to add argurments to the function
-        analogWrite(go_pin, increment * speed);
-        delay(1);
-        increment = increment - .01;
-        Serial.print(increment);
-    }
-}
+// void MotorControl::Motor_stopMove()
+// {
+//     double increment = 0.01;
+//     while (increment > 0)
+//     {
+//         // alternatively I could just put the set speed function here
+//         // but then I would need to add argurments to the function
+//         analogWrite(go_pin, increment * speed);
+//         delay(1);
+//         increment = increment - .01;
+//         Serial.print(increment);
+//     }
+// }
 
-void MotorControl::checkDirection(int newSpeed)
-{
-    if (newSpeed < 0)
-    {
-        go_pin = Assignments.in2;
-        no_go_pin = Assignments.in1;
-        speed = -newSpeed;
-    }
-    else
-    {
-        go_pin = Assignments.in1;
-        no_go_pin = Assignments.in2;
-        speed = newSpeed;
-    }
+// void MotorControl::checkDirection(int newSpeed)
+// {
+    
+// }
+
+int MotorControl::getSpeed(){
+    return speed;
 }

@@ -9,12 +9,12 @@
 #define CHASSIS_H
 
 #include "arduino_freertos.h"
+#include "queue.h"
 
 #include "ros.h"
 #include "geometry_msgs/Twist.h"
 #include "std_msgs/Int32MultiArray.h"
 
-#include "MotorControl.h"
 #include "Observer.hpp"
 #include "QDC_Encoder.h"
 
@@ -37,37 +37,21 @@
  */ 
 class Chassis {
 public:
-  Chassis(std::vector<MotorControl> motors);
-  // Chassis(Chassis &&) = default;
-  // Chassis(const Chassis &) = default;
-  // Chassis &operator=(Chassis &&) = default;
-  // Chassis &operator=(const Chassis &) = default;
+  Chassis();
   ~Chassis();
 
-  bool initTask();
-  void initNode(ros::NodeHandle *nh);
   void motorTest();
   void cmdVelTest();
-  void subscriber_cb(const geometry_msgs::Twist &cmd_vel);
+  double* getWheelSpeeds();
+  void meccanum_kinematics(geometry_msgs::Twist cmd_vel);
 
   ros::NodeHandle *_nh;
 
 private:
 
-  std::vector<MotorControl> _motors;
   double _wheel_speeds[NUM_MOTORS];
+  double _chassis_length, _chassis_width;
 
-  // Line following
-  Observer<int> line_follower;
-  int _line_following_gain = 0;
-
-  ros::Subscriber<geometry_msgs::Twist, Chassis> sub;
-  geometry_msgs::Twist _cmd_vel;
-  std_msgs::Int32MultiArray wheels;
-
-  void meccanum_kinematics(geometry_msgs::Twist cmd_vel);
-  static void chassisControl_task(void * pvParameters);
-  void chassisControl();
 };
 
 #endif // !CHASSIS_H

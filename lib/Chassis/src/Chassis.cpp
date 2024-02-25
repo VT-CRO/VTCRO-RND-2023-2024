@@ -7,141 +7,112 @@
 // Description:  This file contains class declarations for
 //               a mecannum chassis object
 /////////////////////////////////////////////////////////////
-#include "Chassis.h"
-#include "HardwareDefs.h"
+#include "Chassis.hpp"
+#include <HardwareDefs.h>
 
-Chassis::Chassis(std::vector<MotorControl> motors)
-    : sub("/cmd_vel", &Chassis::subscriber_cb, this)
+Chassis::Chassis(){};
 
-{
-    _motors = motors;
+Chassis::~Chassis(){};
 
-    for (unsigned int i = 0; i < _motors.size(); ++i) {
-        _motors[i].Motor_pin_init();
-    }
+void Chassis::meccanum_kinematics(geometry_msgs::Twist cmd_vel) {
+  float x = cmd_vel.linear.x;
+  float y = cmd_vel.linear.y;
+  float w = cmd_vel.angular.z;
+
+  float lw = LENGTH + WIDTH;
+
+  _wheel_speeds[0] = x - y - (w * lw);
+  _wheel_speeds[1] = x + y + (w * lw);
+  _wheel_speeds[2] = x - y + (w * lw);
+  _wheel_speeds[3] = x + y - (w * lw);
+
+  for (int i = 0; i < 4; ++i) {
+    _wheel_speeds[i] = map(_wheel_speeds[i], -1, 1, -255, 255);
+  }
 }
 
-bool Chassis::initTask()
-{
-    if (xTaskCreate(Chassis::chassisControl_task, "chassis control task", 2048, this, tskIDLE_PRIORITY + tskCHASSIS_PRIORITY, NULL) != pdTRUE)
-    {
-        return 1;
-    }
-    return 0;
-}
+double *Chassis::getWheelSpeeds() { return _wheel_speeds; }
 
-void Chassis::initNode(ros::NodeHandle *nh)
-{
-    _nh = nh;
-    _nh->subscribe(sub);
-}
+// void Chassis::chassisControl_task(void *pvParameters)
+// {
+//     Chassis *instance = (Chassis *)pvParameters;
 
-void Chassis::subscriber_cb(const geometry_msgs::Twist &cmd_vel)
-{
-    taskENTER_CRITICAL();
+//     TickType_t ui32WakeTime = xTaskGetTickCount();
 
-    _nh->loginfo("Subscriber callback.");
+//     while (1)
+//     {
+//         instance->chassisControl();
 
-    // might have to push data to queue for thread-safe data receive
+//         xTaskDelayUntil(&ui32WakeTime, pdMS_TO_TICKS(CONTROL_LOOP_PERIOD));
+//     }
+// }
 
-    taskEXIT_CRITICAL();
-}
+// void Chassis::chassisControl()
+// {
+//     // _cmd_vel.linear.y -= _line_following_gain * line_follower.getState();
 
-void Chassis::meccanum_kinematics(geometry_msgs::Twist cmd_vel)
-{
-    float x = cmd_vel.linear.x;
-    float y = cmd_vel.linear.y;
-    float w = cmd_vel.angular.z;
+//     // meccanum_kinematics(_cmd_vel);
 
-    float lw = LENGTH + WIDTH;
+//     // for (unsigned int i = 0; i < _motors.size(); ++i)
+//     //     _motors[i].Motor_start(_wheel_speeds[i]);
+// }
 
-    _wheel_speeds[0] = x + y - (lw * w / WHEEL_RADIUS);
-    _wheel_speeds[1] = x + y + (lw * w / WHEEL_RADIUS);
-    _wheel_speeds[2] = x - y + (lw * w / WHEEL_RADIUS);
-    _wheel_speeds[3] = x + y - (lw * w / WHEEL_RADIUS);
-}
+// void Chassis::motorTest()
+// {
+//     bool on = false;
+//     while(1) {
+//         if (on)
+//             digitalWrite(arduino::LED_BUILTIN, arduino::HIGH);
+//         else
+//             digitalWrite(arduino::LED_BUILTIN, arduino::LOW);
 
-void Chassis::chassisControl_task(void *pvParameters)
-{
-    Chassis *instance = (Chassis *)pvParameters;
+//         on = !on;
+//         Serial.println("Running motor Tests...");
+//         for (unsigned int i = 0; i < _motors.size(); ++i) {
+//             _motors[i].Motor_start(200);
+//             delay(1000);
+//         }
+//     }
+// }
 
-    TickType_t ui32WakeTime = xTaskGetTickCount();
+// void Chassis::cmdVelTest()
+// {
+//     geometry_msgs::Twist up;    up.linear.x = 200;
+//     geometry_msgs::Twist upLeft;    upLeft.linear.x = 200; upLeft.linear.y =
+//     200; geometry_msgs::Twist left;  left.linear.y = 200;
+//     geometry_msgs::Twist downLeft;  downLeft.linear.x = -200;
+//     downLeft.linear.y = 200; geometry_msgs::Twist down;  down.linear.x =
+//     -200; geometry_msgs::Twist downRight; downRight.linear.x = -200;
+//     downRight.linear.y = -200; geometry_msgs::Twist right; right.linear.y =
+//     -200; geometry_msgs::Twist upRight;   upRight.linear.y = -200;
+//     upRight.linear.x = 200;
 
-    while (1)
-    {
-        instance->chassisControl();
+//     geometry_msgs::Twist cardinal_dirs[8] = {
+//         up, upLeft, left, downLeft, down, downRight, right, upRight
+//     };
 
-        xTaskDelayUntil(&ui32WakeTime, pdMS_TO_TICKS(CONTROL_LOOP_PERIOD));
-    }
-}
+//     bool on = false;
 
-void Chassis::chassisControl()
-{
-    // to compensate for off-centeredness, we add chassis velocity in the y direction
-    _cmd_vel.linear.y -= _line_following_gain * line_follower.getState();
+//     _line_following_gain = 0;
 
-    meccanum_kinematics(_cmd_vel);
+//     while (1) {
+//         // for (int i = 0; i < 8; ++i)
+//         // {
+//         //     if (on)
+//         //         digitalWrite(arduino::LED_BUILTIN, arduino::HIGH);
+//         //     else
+//         //         digitalWrite(arduino::LED_BUILTIN, arduino::LOW);
 
-    // Motor PID control loop handled in a separate RTOS thread
-    for (unsigned int i = 0; i < _motors.size(); ++i)
-        _motors[i].Motor_start(_wheel_speeds[i]);
-}
+//         //     on = !on;
+//         //     meccanum_kinematics(cardinal_dirs[i]);
 
-void Chassis::motorTest()
-{
-    bool on = false;
-    while(1) {
-        if (on)
-            digitalWrite(arduino::LED_BUILTIN, arduino::HIGH);
-        else    
-            digitalWrite(arduino::LED_BUILTIN, arduino::LOW);
-
-        on = !on;
-        Serial.println("Running motor Tests...");
-        for (unsigned int i = 0; i < _motors.size(); ++i) {
-            _motors[i].Motor_start(200);
-            delay(1000);
-        }
-    }
-}
-
-void Chassis::cmdVelTest()
-{
-    geometry_msgs::Twist up;    up.linear.x = 200;
-    geometry_msgs::Twist upLeft;    upLeft.linear.x = 200; upLeft.linear.y = 200;
-    geometry_msgs::Twist left;  left.linear.y = 200;
-    geometry_msgs::Twist downLeft;  downLeft.linear.x = -200; downLeft.linear.y = 200;
-    geometry_msgs::Twist down;  down.linear.x = -200;
-    geometry_msgs::Twist downRight; downRight.linear.x = -200; downRight.linear.y = -200;
-    geometry_msgs::Twist right; right.linear.y = -200;
-    geometry_msgs::Twist upRight;   upRight.linear.y = -200; upRight.linear.x = 200;
-
-    geometry_msgs::Twist cardinal_dirs[8] = {
-        up, upLeft, left, downLeft, down, downRight, right, upRight
-    };
-
-    bool on = false;
-
-    _line_following_gain = 0;
-
-    while (1) {
-        // for (int i = 0; i < 8; ++i)
-        // {
-        //     if (on)
-        //         digitalWrite(arduino::LED_BUILTIN, arduino::HIGH);
-        //     else    
-        //         digitalWrite(arduino::LED_BUILTIN, arduino::LOW);
-
-        //     on = !on;
-        //     meccanum_kinematics(cardinal_dirs[i]);
-
-        //     for (unsigned int j = 0; j < _motors.size(); ++j)
-        //         _motors[j].Motor_start(_wheel_speeds[j]);
+//         //     for (unsigned int j = 0; j < _motors.size(); ++j)
+//         //         _motors[j].Motor_start(_wheel_speeds[j]);
             
-        //     delay(500);
-        // }
-        meccanum_kinematics(cardinal_dirs[0]);
-        for (unsigned int j = 0; j < _motors.size(); ++j)
-            _motors[j].Motor_start(_wheel_speeds[j]);
-    }
-}
+//         //     delay(500);
+//         // }
+//         meccanum_kinematics(cardinal_dirs[0]);
+//         for (unsigned int j = 0; j < _motors.size(); ++j)
+//             _motors[j].Motor_start(_wheel_speeds[j]);
+//     }
+// }
