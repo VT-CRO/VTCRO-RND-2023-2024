@@ -1,0 +1,11 @@
+on: [push]
+jobs:
+  build:
+    runs-on: ubuntu-18.04
+    container:
+      image: jdv52/vt-cro-pio-ci
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@v3
+      - name: Build the project
+        run: pio run
