@@ -1,62 +1,75 @@
 #include "arduino_freertos.h"
-#include "avr/pgmspace.h"
-// #include "MotorControl.h"
+#include <ros.h>
+#include <geometry_msgs/Twist.h>
 
-static void task1(void*) {
-  while (true) {
-    digitalWriteFast(arduino::LED_BUILTIN, arduino::LOW);
-    vTaskDelay(pdMS_TO_TICKS(500));
+#include <spin_task.h>
 
-    digitalWriteFast(arduino::LED_BUILTIN, arduino::HIGH);
-    vTaskDelay(pdMS_TO_TICKS(500));
-  }
+#include "Chassis.hpp"
+#include "MotorControl.h"
+
+#include "HardwareDefs.h"
+
+#include <Servo.h>
+
+ros::NodeHandle nh;
+Chassis chassis;
+
+MotorControl m1(MOTOR_FL_IN1, MOTOR_FL_IN2);
+MotorControl m2(MOTOR_FR_IN1, MOTOR_FR_IN2);
+MotorControl m3(MOTOR_BR_IN1, MOTOR_BR_IN2);
+MotorControl m4(MOTOR_BL_IN1, MOTOR_BL_IN2);
+
+void sub_cb(const geometry_msgs::Twist& msg)
+{
+  chassis.meccanum_kinematics(msg);
 }
 
-static void task2(void*) {
-  while (true) {
-    Serial.println("TICK");
-    vTaskDelay(pdMS_TO_TICKS(1'000));
+ros::Subscriber<geometry_msgs::Twist> sub("/cmd_vel", &sub_cb);
 
-    Serial.println("TOCK");
-    vTaskDelay(pdMS_TO_TICKS(1'000));
-  }
-}
+Servo servo;
 
-FLASHMEM __attribute__((noinline))
-void setup() {
-  Serial.begin(115'200);
+FLASHMEM __attribute__((noinline)) void setup()
+{
+  // servo.attach(6);
+  // std::vector<MotorControl> motors;
+  // motors.push_back(m1); // FL
+  // motors.push_back(); // FR
+  // motors.push_back(); // BR
+  // motors.push_back(); // BL
+
   pinMode(arduino::LED_BUILTIN, arduino::OUTPUT);
   digitalWriteFast(arduino::LED_BUILTIN, arduino::HIGH);
 
-  delay(5'000);
-
-  if (CrashReport)  {
-    Serial.print(CrashReport);
-    Serial.println();
-    Serial.flush();
-  }
-
-  Serial.println(PSTR("\r\nBooting FreeRTOS kernel " tskKERNEL_VERSION_NUMBER ". Built by gcc " __VERSION__ " (newlib " _NEWLIB_VERSION ") on " __DATE__ ". ***\r\n"));
-
-  // create tasks
-  xTaskCreate(task1, "task1", 128, nullptr, 2, nullptr);
-  xTaskCreate(task2, "task2", 128, nullptr, 2, nullptr);
-
-  // start the scheduler
-  Serial.println("setup(): starting scheduler...");
-  Serial.flush();
-
-  // MotorControl m;
-  // m.Motor_pin_init();
-  // m.Motor_start();
-  
-
-  vTaskStartScheduler();
-
+  nh.getHardware()->setBaud(115200);
+  nh.initNode();
+  nh.subscribe(sub);
 }
 
+void loop()
+{
+  double* speds = chassis.getWheelSpeeds();
 
-void loop() {
-  // put your main code here, to run repeatedly:
+  char buff[50];
+  sprintf(buff, "%d %d %d %d", (int)speds[0], (int)speds[1], (int)speds[2], (int)speds[3]);
+  nh.loginfo(buff);
+  // sprintf(buff, "%d %d %d %d", m1.getSpeed(), m2.getSpeed(), m3.getSpeed(), m4.getSpeed());
 
+  m1.Motor_start((int)speds[0]);
+  // m1.logState(nh);
+  m2.Motor_start((int)speds[1]);
+  m3.Motor_start((int)speds[2]);
+  m4.Motor_start((int)speds[3]);
+
+  nh.spinOnce();
+  
+  delay(100);
+
+  // servo.write(110); // 75 for full forward, 120 for reverse
+  // delay(3000);
+  // servo.write(0);
+  // delay(1000);
+  // servo.write(75);
+  // delay(3000);
+  // servo.write(0);
+  // delay(5000);
 }

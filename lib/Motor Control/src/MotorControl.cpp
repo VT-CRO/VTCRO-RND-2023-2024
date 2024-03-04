@@ -1,115 +1,156 @@
 /////////////////////////////////////////////////////////////
 // Author: Domenic Marcelli   R&D Team VT CRO
 // filename: MotorControl.cpp
-// Last Modified: 10/20/2023
-// Description:  This where the function defintions are kept
-///////////////////////////////////////////////////////////// 
-
-//notes PWM example https://github.com/khoih-prog/Teensy_PWM  <- might be useful but all examples are in INO form
-// might want to look at ECE 2564 notes for PWM Reference HW 11
-//check platform IO path .platformio\packages\framework-arduinoteensy-ts\cores\teensy4 for pwm.c file
+// Last Modified: 01/14/2024
+// Description:  This where the function defintions for the
+//               Motor Controller are kept. Continously be updated
+//
+// Modifications: Changed it from handleing all the motors to just one
+//                so that we can take advantage of c++ objects and threads
+//                with RTOS
+/////////////////////////////////////////////////////////////
 #include <MotorControl.h>
 
-//check out his header c file for everything PWM related.
+// Notes:
+//  Have a function that allows the encoder to listen to state of motor
+//  of the encoder
 
-//Pin Macros Here
+// Make the functionality for the PID loop - complete?
 
-//might want to make a custom? Might just want to keep this hard coded.
-//https://www.pjrc.com/teensy/td_pulse.html <- default PWM values for pins
-//if we want more control then we need to find a way to change the timer
-//related to these pins
+// Motor Control Constructor
+// Assigns values to the pin variables
+MotorControl::MotorControl(int in1, int in2)
+{
 
-//D pins control speed and 
-MotorControl::MotorControl(){
-    motorOutputPWMPin1 = 37;  //4.482 kHz //37 - 
-    int motorOutIN1Pin1 = 19;      //IN1 Digital Pin
-    int motorOutIN2Pin1 = 18;      //IN2 Digital Pin
-
-    motorOutputPWMPin2_1 = 36;  //4.482 kHz
-    motorOutputPWMPin3_1 = 28;  //4.482 kHz
-    motorOutputPWMPin4_1 = 29;  //4.482 kHz
-
+    Assignments.in1 = in1;
+    Assignments.in2 = in2;
+    speed = 0;
+    current_velocity = 0; // need to talk about this with jason
+    goal_velocity = 0;    // need to talk about this with jason
+    pidMode = false;
+    Motor_pin_init();
 }
 
-void MotorControl::Motor_setPIDParams(){
-
+void MotorControl::Motor_setPIDParams(float P, float I, float D)
+{
+    motorP = P;
+    motorI = I;
+    motorD = D;
 }
 
-//Starts up the motors by sending an analog pwm wave.
-void MotorControl::Motor_start(){
-    analogWrite(motorOutputPWMPin1, 0);
-    digitalWrite(motorOutIN1Pin1, arduino::LOW);
-    digitalWrite(motorOutIN2Pin1, arduino::LOW);
-
-
-    analogWrite(motorOutputPWMPin2_1, 0);
-    analogWrite(motorOutputPWMPin3_1, 0);
-    analogWrite(motorOutputPWMPin4_1, 0);
+void MotorControl::Motor_enablePIDTask()
+{
+    (xTaskCreate(MotorControl::pid_task, "PID control task", 100, this, tskIDLE_PRIORITY + tskPID_PRIORITY, NULL) != pdTRUE);
+    pidMode = false;
 }
 
-//don't do
-void MotorControl::Motor_dispatch(){
-
+// Motor Speed sets the speed of the motors.
+// Values go from 0 - 255 for analogWrite.
+//  I want to support negative values later
+//  to signify reverse.
+void MotorControl::Motor_start(int newSpeed)
+{
+    // double increment = .01;
+    // while (increment < 1)
+    // {
+    //     analogWrite(go_pin, increment * speed);
+    //     delay(1);
+    //     increment = increment + .01;
+    //     Serial.print(increment);
+    // }
+    int go_pin, no_go_pin;
+    
+    if (newSpeed < 0)
+    {
+        go_pin = Assignments.in2;
+        no_go_pin = Assignments.in1;
+    }
+    else
+    {
+        go_pin = Assignments.in1;
+        no_go_pin = Assignments.in2;
+    }
+    speed = abs(newSpeed);
+    analogWrite(no_go_pin, 0);
+    analogWrite(go_pin, speed);
 }
 
-//initalizes the pins 
-void MotorControl::Motor_pin_init(){
-      pinMode(motorOutputPWMPin1, arduino::OUTPUT);
-      pinMode(motorOutIN1Pin1, arduino::OUTPUT);
-      pinMode(motorOutIN2Pin1, arduino::OUTPUT);
-
-      pinMode(motorOutputPWMPin2_1, arduino::OUTPUT);
-    //   pinMode(motorOutputPWMPin3_1, arduino::OUTPUT);
-    //   pinMode(motorOutputPWMPin4_1, arduino::OUTPUT);
+void MotorControl::logState(ros::NodeHandle &nh)
+{
+    char buff[32];
+    sprintf(buff, "Motor Speed: %d", speed);
+    nh.loginfo(buff);
 }
 
-//Values go from 0 - 255 for analogWrite. Needed to be find some convention
-//to make value. 
-void MotorControl::Motor_setSpeed(int value){
-    analogWrite(motorOutputPWMPin1, value);
-    analogWrite(motorOutputPWMPin2_1, value);
-    analogWrite(motorOutputPWMPin3_1, value);
-    analogWrite(motorOutputPWMPin4_1, value);
+// Motor_pin_init initalizates pins.
+//  honestly, we might want the constuctor to handle this
+void MotorControl::Motor_pin_init()
+{
+    pinMode(Assignments.in1, arduino::OUTPUT);
+    pinMode(Assignments.in2, arduino::OUTPUT);
 }
 
-//To change direction motors but be rotating in opposite directions.
-//I used analogWrite so we can have more control over how fast we turn
-void MotorControl::Motor_setDirection(int direction, int delay){
+void MotorControl::pid_task(void *pidParams)
+{
+    MotorControl *instance = (MotorControl *)pidParams;
 
-    //subject to change. We will want to control, angle of turn
-    switch(direction){
-        //forward
-        case(0):
-            digitalWrite(motorOutIN1Pin1, arduino::HIGH);
-            digitalWrite(motorOutIN2Pin1, arduino::LOW);
-            /*analogWrite(motorOutputPWMPin2_1, 0);
-            analogWrite(motorOutputPWMPin3_1, 0);
-            analogWrite(motorOutputPWMPin4_1, 0);*/
-            break;
-        //backward
-        case(1):
-            //analogWrite(motorOutputPWMPin1, 0);
-            // analogWrite(motorOutputPWMPin2_1, 0);
-            // analogWrite(motorOutputPWMPin3_1, 0);
-            // analogWrite(motorOutputPWMPin4_1, 0);
-            break;
-        //counter clock wise
-        case(2):
-            //analogWrite(motorOutputPWMPin1, 0);
-            // analogWrite(motorOutputPWMPin2_1, 0);
-            // analogWrite(motorOutputPWMPin3_1, 0);
-            // analogWrite(motorOutputPWMPin4_1, 0);
-            break;
-        //clock wise
-        case(3):
-            //analogWrite(motorOutputPin1, 0);
-            // analogWrite(motorOutputPWMPin2_1, 0);
-            // analogWrite(motorOutputPWMPin3_1, 0);
-            // analogWrite(motorOutputPWMPin4_1, 0);
-            break;
+    TickType_t ui32WakeTime = xTaskGetTickCount();
+
+    while (1)
+    {
+        instance->Motor_pidControlLoop();
+        xTaskDelayUntil(&ui32WakeTime, pdMS_TO_TICKS(PID_LOOP_PERIOD));
     }
 }
 
-void MotorControl::Motor_pidControlLoop(){
+void MotorControl::Motor_pidControlLoop()
+{
+
+    float error_velocity = goal_velocity - current_velocity;
+
+    float PG = error_velocity * motorP;                // Proptional Gain
+    float DG = (error_velocity - last_error) * motorD; // Differential Gain
+
+    last_error = error_velocity;
+    // need to be able to set velocity for next interation of the loop
+    // right now the only thing we have is set speed which ranges from 0-256 bytes
+    // figure out how that works. Probably need to deal with the encoder somewhere else in the codeDo
+    float controlSig = PG + DG;
+
+    // set speed with value control Sig and convert bounds
+    if (controlSig > 255)
+    {
+        controlSig = 255.0;
+    }
+    else if (controlSig < -255)
+    {
+        controlSig = -255.0;
+    }
+
+    speed = (int)controlSig;
+
+    Motor_start(speed);
+}
+
+// void MotorControl::Motor_stopMove()
+// {
+//     double increment = 0.01;
+//     while (increment > 0)
+//     {
+//         // alternatively I could just put the set speed function here
+//         // but then I would need to add argurments to the function
+//         analogWrite(go_pin, increment * speed);
+//         delay(1);
+//         increment = increment - .01;
+//         Serial.print(increment);
+//     }
+// }
+
+// void MotorControl::checkDirection(int newSpeed)
+// {
     
+// }
+
+int MotorControl::getSpeed(){
+    return speed;
 }
