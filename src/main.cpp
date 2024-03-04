@@ -3,54 +3,73 @@
 #include <geometry_msgs/Twist.h>
 
 #include <spin_task.h>
-#include <Chassis.h>
-#include "QTR_8.h"
-#include "QTR_8.cpp"
 
-void subscriber_cb(const geometry_msgs::Twist& msg)
-{
-  Serial.printf("cmd_vel:\n\tlinear:\n\t\tx: %f\n\t\ty: %f\n\t\ty: %f\n\tangular:\t\tx: %f\n\t\ty: %f\n\t\ty: %f\n", msg.linear.x, msg.linear.y, msg.linear.z, msg.angular.x, msg.angular.y, msg.angular.z);
-}
+#include "Chassis.hpp"
+#include "MotorControl.h"
+
+#include "HardwareDefs.h"
+
+#include <Servo.h>
 
 ros::NodeHandle nh;
-ros::Subscriber<geometry_msgs::Twist> sub("/cmd_vel", &subscriber_cb);
+Chassis chassis;
 
-FLASHMEM __attribute__((noinline))
-void setup() {
-  Serial.println("Starting! \n");
- /*
-  nh.initNode();
-  nh.subscribe(sub);
+MotorControl m1(MOTOR_FL_IN1, MOTOR_FL_IN2);
+MotorControl m2(MOTOR_FR_IN1, MOTOR_FR_IN2);
+MotorControl m3(MOTOR_BR_IN1, MOTOR_BR_IN2);
+MotorControl m4(MOTOR_BL_IN1, MOTOR_BL_IN2);
 
-  if (spinInitTask(&nh))
-  {
-    // error
-    while(1);
-  }
-
-  // subscriber test
-
-  // Chassis chassis;
-
-  // if (chassis.initTask(&nh))
-  // {
-  //   // error
-  //   while(1);
-  // }
-*/
-
-  QTR_8 qtr(4);
-  qtr.initTask();
-  vTaskStartScheduler();
-
-  while(1)
-  {
-    Serial.println("Scheduler Failed! \n");
-    Serial.flush();
-    delay(1000);
-  }
+void sub_cb(const geometry_msgs::Twist& msg)
+{
+  chassis.meccanum_kinematics(msg);
 }
 
-void loop() {
+ros::Subscriber<geometry_msgs::Twist> sub("/cmd_vel", &sub_cb);
+
+Servo servo;
+
+FLASHMEM __attribute__((noinline)) void setup()
+{
+  // servo.attach(6);
+  // std::vector<MotorControl> motors;
+  // motors.push_back(m1); // FL
+  // motors.push_back(); // FR
+  // motors.push_back(); // BR
+  // motors.push_back(); // BL
+
+  pinMode(arduino::LED_BUILTIN, arduino::OUTPUT);
+  digitalWriteFast(arduino::LED_BUILTIN, arduino::HIGH);
+
+  nh.getHardware()->setBaud(115200);
+  nh.initNode();
+  nh.subscribe(sub);
+}
+
+void loop()
+{
+  double* speds = chassis.getWheelSpeeds();
+
+  char buff[50];
+  sprintf(buff, "%d %d %d %d", (int)speds[0], (int)speds[1], (int)speds[2], (int)speds[3]);
+  nh.loginfo(buff);
+  // sprintf(buff, "%d %d %d %d", m1.getSpeed(), m2.getSpeed(), m3.getSpeed(), m4.getSpeed());
+
+  m1.Motor_start((int)speds[0]);
+  // m1.logState(nh);
+  m2.Motor_start((int)speds[1]);
+  m3.Motor_start((int)speds[2]);
+  m4.Motor_start((int)speds[3]);
+
+  nh.spinOnce();
+  
   delay(100);
+
+  // servo.write(110); // 75 for full forward, 120 for reverse
+  // delay(3000);
+  // servo.write(0);
+  // delay(1000);
+  // servo.write(75);
+  // delay(3000);
+  // servo.write(0);
+  // delay(5000);
 }

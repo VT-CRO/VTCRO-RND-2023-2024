@@ -20,9 +20,14 @@ static void spinTask(void *pvParameters)
 
     while (1)
     {
-        nh_->spinOnce();
+        taskENTER_CRITICAL();
 
-        vTaskDelayUntil(&ui32WakeTime, ROS_SPIN_PERIOD);
+        nh_->loginfo("Spinning...");
+        nh_->spinOnce();
+        
+        taskEXIT_CRITICAL();
+
+        xTaskDelayUntil(&ui32WakeTime, pdMS_TO_TICKS(ROS_SPIN_PERIOD));
     }
 }
 
@@ -32,6 +37,7 @@ bool spinInitTask(ros::NodeHandle *nh)
 
     if (xTaskCreate(spinTask, "spin", 100, NULL, tskIDLE_PRIORITY + tskSPIN_PRIORITY, NULL) != pdTRUE)
     {
+        nh_->logfatal("Failed to create spin task!");
         return 1;
     }
     return 0;
