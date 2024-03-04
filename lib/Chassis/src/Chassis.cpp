@@ -21,6 +21,9 @@ void Chassis::meccanum_kinematics(geometry_msgs::Twist cmd_vel) {
 
   float lw = LENGTH + WIDTH;
 
+  // Standard inverse kinematic algorithm for a mecanum drive
+  // adapted from:
+  // https://ecam-eurobot.github.io/Tutorials/mechanical/mecanum.html
   _wheel_speeds[0] = x - y - (w * lw);
   _wheel_speeds[1] = x + y + (w * lw);
   _wheel_speeds[2] = x - y + (w * lw);
@@ -108,7 +111,7 @@ double *Chassis::getWheelSpeeds() { return _wheel_speeds; }
 
 //         //     for (unsigned int j = 0; j < _motors.size(); ++j)
 //         //         _motors[j].Motor_start(_wheel_speeds[j]);
-            
+
 //         //     delay(500);
 //         // }
 //         meccanum_kinematics(cardinal_dirs[0]);
