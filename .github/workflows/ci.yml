@@ -1,9 +1,9 @@
 on: [push]
 jobs:
   build:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
     container:
-      image: jdv52/vt-cro-pio-ci
+      image: jdv52/vt-cro-pio-ci:latest
     steps:
       - name: Checkout the repository
         uses: actions/checkout@v3
