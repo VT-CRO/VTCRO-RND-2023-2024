@@ -21,6 +21,9 @@ MotorControl m4(MOTOR_BL_IN1, MOTOR_BL_IN2);
 Servo thruster_arm_servo;
 Servo thruster_rel_servo;
 
+const int photoPin = A0;
+int value = 0;
+
 void sub_cb(const geometry_msgs::Twist& msg)
 {
   chassis.meccanum_kinematics(msg);
@@ -59,18 +62,25 @@ FLASHMEM __attribute__((noinline)) void setup()
 
 void loop()
 {
-  double* speds = chassis.getWheelSpeeds();
-
-  char buff[50];
-  sprintf(buff, "%d %d %d %d", (int)speds[0], (int)speds[1], (int)speds[2], (int)speds[3]);
-  nh.loginfo(buff);
-
-  m1.Motor_start((int)speds[0]);
-  m2.Motor_start((int)speds[1]);
-  m3.Motor_start((int)speds[2]);
-  m4.Motor_start((int)speds[3]);
-
-  nh.spinOnce();
+  int tempVal = analogRead(photoPin);
   
-  delay(100);
+  if(tempVal > value) value = tempVal;
+
+  while (value > 10)
+  {
+    double* speds = chassis.getWheelSpeeds();
+
+    char buff[50];
+    sprintf(buff, "%d %d %d %d", (int)speds[0], (int)speds[1], (int)speds[2], (int)speds[3]);
+    nh.loginfo(buff);
+
+    m1.Motor_start((int)speds[0]);
+    m2.Motor_start((int)speds[1]);
+    m3.Motor_start((int)speds[2]);
+    m4.Motor_start((int)speds[3]);
+
+    nh.spinOnce();
+  
+    delay(100);
+  }
 }
