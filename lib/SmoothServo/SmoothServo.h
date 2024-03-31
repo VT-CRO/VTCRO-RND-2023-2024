@@ -1,10 +1,10 @@
-/////////////////////////////////////////////////////////////
-// Author: Jayson De La Vega   R&D Team VT CRO
-// filename: SmoothServo.h
-// Last Modified: 3/24/2024
-// Description:  This file contains class declarations for
-//               a servo class with smoother movement
-/////////////////////////////////////////////////////////////
+// /////////////////////////////////////////////////////////////
+// // Author: Jayson De La Vega   R&D Team VT CRO
+// // filename: SmoothServo.h
+// // Last Modified: 3/24/2024
+// // Description:  This file contains class declarations for
+// //               a servo class with smoother movement
+// /////////////////////////////////////////////////////////////
 #include "Servo.h"
 
 class SmoothServo {
@@ -12,9 +12,10 @@ class SmoothServo {
         SmoothServo(int pin);
         ~SmoothServo();
 
-        void updatePosition(unsigned long &lastUpdate);
+        void updatePosition();
         void setConstants(double damping, double resonant, double r);
         void setGoalPosition(int angle);
+        int getAngle();
 
     private:
         Servo servo;
@@ -24,5 +25,7 @@ class SmoothServo {
         int goalAngle;
         int y;
         int yd;
-        int xp;
+        int ydd;
+        int xd;
+        long lastUpdate;
 };

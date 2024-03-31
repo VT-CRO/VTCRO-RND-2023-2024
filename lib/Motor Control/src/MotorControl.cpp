@@ -36,11 +36,11 @@ void MotorControl::Motor_setPIDParams(float P, float I, float D) {
   motorD = D;
 }
 
-void MotorControl::Motor_enablePIDTask() {
-  (xTaskCreate(MotorControl::pid_task, "PID control task", 100, this,
-               tskIDLE_PRIORITY + tskPID_PRIORITY, NULL) != pdTRUE);
-  pidMode = false;
-}
+// void MotorControl::Motor_enablePIDTask() {
+//   (xTaskCreate(MotorControl::pid_task, "PID control task", 100, this,
+//                tskIDLE_PRIORITY + tskPID_PRIORITY, NULL) != pdTRUE);
+//   pidMode = false;
+// }
 
 // Motor Speed sets the speed of the motors.
 // Values go from 0 - 255 for analogWrite.
@@ -78,20 +78,20 @@ void MotorControl::logState(ros::NodeHandle &nh) {
 // Motor_pin_init initalizates pins.
 //  honestly, we might want the constuctor to handle this
 void MotorControl::Motor_pin_init() {
-  pinMode(Assignments.in1, arduino::OUTPUT);
-  pinMode(Assignments.in2, arduino::OUTPUT);
+  pinMode(Assignments.in1, OUTPUT);
+  pinMode(Assignments.in2, OUTPUT);
 }
 
-void MotorControl::pid_task(void *pidParams) {
-  MotorControl *instance = (MotorControl *)pidParams;
+// void MotorControl::pid_task(void *pidParams) {
+//   MotorControl *instance = (MotorControl *)pidParams;
 
-  TickType_t ui32WakeTime = xTaskGetTickCount();
+//   TickType_t ui32WakeTime = xTaskGetTickCount();
 
-  while (1) {
-    instance->Motor_pidControlLoop();
-    xTaskDelayUntil(&ui32WakeTime, pdMS_TO_TICKS(PID_LOOP_PERIOD));
-  }
-}
+//   while (1) {
+//     instance->Motor_pidControlLoop();
+//     xTaskDelayUntil(&ui32WakeTime, pdMS_TO_TICKS(PID_LOOP_PERIOD));
+//   }
+// }
 
 void MotorControl::Motor_pidControlLoop() {
 

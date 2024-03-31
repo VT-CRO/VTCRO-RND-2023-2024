@@ -11,16 +11,12 @@
 #include "arduino_freertos.h"
 #include "queue.h"
 
-#include "geometry_msgs/Twist.h"
 #include "ros.h"
-#include "std_msgs/Int32MultiArray.h"
+#include "geometry_msgs/Twist.h"
 
-#include "Observer.hpp"
-#include "QDC_Encoder.h"
+#include "MotorControl.h"
 
 #define NUM_MOTORS 4
-#define CONTROL_LOOP_PERIOD 500
-
 #define tskCHASSIS_PRIORITY 1
 
 /*
@@ -35,21 +31,18 @@
  *           |           |
  *          [4]---------[3]
  */
-class Chassis {
-public:
-  Chassis();
-  ~Chassis();
+typedef struct {
+  MotorControl* m1;
+  MotorControl* m2;
+  MotorControl* m3;
+  MotorControl* m4;
 
-  void motorTest();
-  void cmdVelTest();
-  double *getWheelSpeeds();
-  void meccanum_kinematics(geometry_msgs::Twist cmd_vel);
+  uint16_t velocityCorrection;
+  double velocityCorrectionGain;
+} Chassis_t;
 
-  ros::NodeHandle *_nh;
-
-private:
-  double _wheel_speeds[NUM_MOTORS];
-  double _chassis_length, _chassis_width;
-};
+void Chassis_init(Chassis_t* chassis_ptr);
+void Chassis_setVelocityCorrection(Chassis_t* chassis_ptr, uint16_t err);
+void Chassis_meccanum_kinematics(Chassis_t* chassis_ptr, geometry_msgs::Twist cmd_vel);
 
 #endif // !CHASSIS_H

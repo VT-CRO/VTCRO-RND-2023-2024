@@ -12,7 +12,8 @@
 #ifndef MOTORCONTROL_H_
 #define MOTORCONTROL_H_
 
-#include "arduino_freertos.h"
+// #include "arduino_freertos.h"
+#include "Arduino.h"
 #include "ros.h"
 #include <avr/io.h>
 #include <avr/pgmspace.h>
