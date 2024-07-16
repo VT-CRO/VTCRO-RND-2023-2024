@@ -3,6 +3,22 @@
 
 FLASHMEM __attribute__((noinline)) void setup()
 {
+  // digitalWrite(arduino::LED_BUILTIN, arduino::HIGH);
+  Serial.begin(9600);
+
+  bool ok;
+  while (1)
+  {
+    Serial.println("Hiii!");
+    if (ok)
+      digitalWrite(13, arduino::HIGH);
+    else 
+      digitalWrite(13, arduino::LOW);
+    
+    ok = !ok;
+
+    delay(1000);
+  }
   // setup the following tasks:
   // chassis drive task
   //    this task is responsible for controlling the chassis.
